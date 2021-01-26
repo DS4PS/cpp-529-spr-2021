@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab-04 Build a City Dataset</title>
+
+<script src="lab-04-instructions_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lab-04-instructions_files/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="lab-04-instructions_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lab-04-instructions_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lab-04-instructions_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lab-04-instructions_files/navigation-1.1/tabsets.js"></script>
+<script src="lab-04-instructions_files/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="textbook.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Lab-04 Build a City Dataset</h1>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#packages">Packages</a><ul>
+<li><a href="#data-source">Data Source</a></li>
+</ul></li>
+<li><a href="#build-your-rodeo-dataset">Build Your Rodeo Dataset</a><ul>
+<li><a href="#step-1-select-your-msa">Step 1: Select Your MSA</a></li>
+<li><a href="#step-2-download-a-shapefile-with-population-data">Step 2: Download a Shapefile with Population Data</a></li>
+<li><a href="#step-3-add-census-data">Step 3: Add Census Data</a></li>
+<li><a href="#step-4-transform-the-shapefile-into-a-dorling-cartogram">Step 4: Transform the Shapefile into A Dorling Cartogram</a></li>
+</ul></li>
+<li><a href="#clustering">Clustering</a><ul>
+<li><a href="#prepare-data-for-clustering">Prepare Data for Clustering</a></li>
+<li><a href="#perform-cluster-analysis">Perform Cluster Analysis</a></li>
+<li><a href="#identifying-neighborhood-clusters">Identifying Neighborhood Clusters</a></li>
+</ul></li>
+<li><a href="#variable-selection-for-clustering">Variable Selection for Clustering</a></li>
+<li><a href="#lab-instructions">Lab Instructions</a><ul>
+<li><a href="#part-1">PART 1:</a></li>
+<li><a href="#part-2">PART 2:</a></li>
+<li><a href="#submission-instructions">Submission Instructions</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This lab will have you replicate the work you did for the previous lab, but instead of using the Phoenix data you will select a city of your choice to use for this lab, subsequent labs, and the final project.</p>
+<p>You want to select a dense city that has a lot of census tracts, so I suggest you select from the 50 largest cities in the US. The Census defines Metropolitan Statistical Areas (MSAs) as “one or more adjacent counties or county equivalents that have at least one urban core area of at least 50,000 population, plus adjacent territory that has a high degree of social and economic integration with the core as measured by commuting ties.” There are currently 384 MSAs in the US.</p>
+<p>Wikipedia provides a convenient <a href="https://en.wikipedia.org/wiki/List_of_metropolitan_statistical_areas">list of MSAs sorted by size</a>.</p>
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>( geojsonio )   <span class="co"># read shapefiles</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>( sp )          <span class="co"># work with shapefiles</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>( sf )          <span class="co"># work with shapefiles - simple features format</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>( mclust )      <span class="co"># cluster analysis </span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>( tmap )        <span class="co"># theme maps</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>( ggplot2 )     <span class="co"># graphing </span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>( ggthemes )    <span class="co"># nice formats for ggplots</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">library</span>( dplyr )       <span class="co"># data wrangling </span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">library</span>( pander )      <span class="co"># formatting RMD tables</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">library</span>( tidycensus )</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">library</span>( cartogram )  <span class="co"># spatial maps w/ tract size bias reduction</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">library</span>( maptools )   <span class="co"># spatial object manipulation </span></span></code></pre></div>
+<div id="data-source" class="section level2">
+<h2>Data Source</h2>
+<p>We will again use Census data made available through the <a href="https://s4.ad.brown.edu/projects/diversity/Researcher/Bridging.htm">Diversity and Disparities Project</a>. They have created a dataset with 170 variables that have been harmonized from 1970 onward for analysis of changes in tracts over time. We will use a subset of these:</p>
+</div>
+</div>
+<div id="build-your-rodeo-dataset" class="section level1">
+<h1>Build Your Rodeo Dataset</h1>
+<p>The most time-intensive component of most data projects the wrangling necessary to combine data from a variety of sources, cleaning it, transforming variables, and standardizing the data before it is ready for formal models.</p>
+<p>We will use clustering to identify coherent neighborhoods within cities, but we first must acquire data, download shapefiles, transform the shapefiles into Dorling cartograms, and merge all of the map and census files together for the analysis.</p>
+<p>This lab requires the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Select a city (MSA) and identify all counties in the city</li>
+<li>Download a shapefile for your city<br />
+</li>
+<li>Merge census data to your map file<br />
+</li>
+<li>Transform the shapefile into a Dorling cartogram for more meaningful maps</li>
+</ol>
+<p>At this point you are ready to start clustering census tracts.</p>
+<p>I will demonstrate the code that you will use for the lab using Minneapolis. You will need to adapt it for your own city.</p>
+<div id="step-1-select-your-msa" class="section level2">
+<h2>Step 1: Select Your MSA</h2>
+<p>You can select a city from the list of <a href="https://en.wikipedia.org/wiki/List_of_metropolitan_statistical_areas">large MSAs</a>.</p>
+<p>To get Census data on the city you will first need to identify all of the counties that comprise the MSA. You can look this information up through MSA to FIPS crosswalks provided by the National Bureau for Economic Research (NBER): <a href="https://www.nber.org/data/cbsa-fips-county-crosswalk.html" class="uri">https://www.nber.org/data/cbsa-fips-county-crosswalk.html</a></p>
+<p>I have added the file to GitHub for ease of access.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>crosswalk &lt;-<span class="st"> </span><span class="kw">read.csv</span>( <span class="st">&quot;https://raw.githubusercontent.com/DS4PS/cpp-529-master/master/data/cbsatocountycrosswalk.csv&quot;</span>,  <span class="dt">stringsAsFactors=</span>F, <span class="dt">colClasses=</span><span class="st">&quot;character&quot;</span> )</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># search for citie names by strings, use the ^ anchor for &quot;begins with&quot; </span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">grep</span>( <span class="st">&quot;^CHI&quot;</span>, crosswalk<span class="op">$</span>msaname, <span class="dt">value=</span><span class="ot">TRUE</span> ) </span></code></pre></div>
+<pre><code>##  [1] &quot;CHICO-PARADISE, CA&quot; &quot;CHICAGO, IL&quot;        &quot;CHICAGO, IL&quot;       
+##  [4] &quot;CHICAGO, IL&quot;        &quot;CHICAGO, IL&quot;        &quot;CHICAGO, IL&quot;       
+##  [7] &quot;CHICAGO, IL&quot;        &quot;CHICAGO, IL&quot;        &quot;CHICAGO, IL&quot;       
+## [10] &quot;CHICAGO, IL&quot;</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">grep</span>( <span class="st">&quot;^MIN&quot;</span>, crosswalk<span class="op">$</span>msaname, <span class="dt">value=</span><span class="ot">TRUE</span> ) </span></code></pre></div>
+<pre><code>##  [1] &quot;MINNESOTA&quot;                   &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;
+##  [3] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+##  [5] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+##  [7] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+##  [9] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [11] &quot;MINNESOTA&quot;                   &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;
+## [13] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [15] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [17] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [19] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [21] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [23] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [25] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [27] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [29] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [31] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [33] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [35] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [37] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [39] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [41] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [43] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [45] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [47] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [49] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [51] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [53] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [55] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [57] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [59] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [61] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [63] &quot;MINNESOTA&quot;                   &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;
+## [65] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [67] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [69] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [71] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [73] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [75] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [77] &quot;MINNESOTA&quot;                   &quot;MINNESOTA&quot;                  
+## [79] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot; &quot;MINNESOTA&quot;                  
+## [81] &quot;MINNESOTA&quot;                   &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;
+## [83] &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;</code></pre>
+<p>Select all of your county fips. To use them in the TidyCenss package you will need to split the state and county:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>these.msp &lt;-<span class="st"> </span>crosswalk<span class="op">$</span>msaname <span class="op">==</span><span class="st"> &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>these.fips &lt;-<span class="st"> </span>crosswalk<span class="op">$</span>fipscounty[ these.msp ]</span>
+<span id="cb6-3"><a href="#cb6-3"></a>these.fips &lt;-<span class="st"> </span><span class="kw">na.omit</span>( these.fips )</span></code></pre></div>
+</div>
+<div id="step-2-download-a-shapefile-with-population-data" class="section level2">
+<h2>Step 2: Download a Shapefile with Population Data</h2>
+<p>To create a Dorling cartogram we need a shapefile and a population count. We can get both through the Census download that includes simple features.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">library</span>( tidycensus )</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co"># census_api_key(&quot;YOUR KEY GOES HERE&quot;)</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co"># key &lt;- &quot;abc123&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co"># census_api_key( key )</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>these.msp &lt;-<span class="st"> </span>crosswalk<span class="op">$</span>msaname <span class="op">==</span><span class="st"> &quot;MINNEAPOLIS-ST. PAUL, MN-WI&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>these.fips &lt;-<span class="st"> </span>crosswalk<span class="op">$</span>fipscounty[ these.msp ]</span>
+<span id="cb8-3"><a href="#cb8-3"></a>these.fips &lt;-<span class="st"> </span><span class="kw">na.omit</span>( these.fips )</span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">head</span>( these.fips ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pander</span>()</span></code></pre></div>
+<p>The Minneapolis-St. Paul Metro spans two states, so we need two Census API calls:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>state.fips &lt;-<span class="st"> </span><span class="kw">substr</span>( these.fips, <span class="dv">1</span>, <span class="dv">2</span> )</span>
+<span id="cb9-2"><a href="#cb9-2"></a>county.fips &lt;-<span class="st"> </span><span class="kw">substr</span>( these.fips, <span class="dv">3</span>, <span class="dv">5</span> )</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">cbind</span>( these.fips, state.fips, county.fips ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pander</span>()</span></code></pre></div>
+<table style="width:56%;">
+<colgroup>
+<col width="18%" />
+<col width="18%" />
+<col width="19%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">these.fips</th>
+<th align="center">state.fips</th>
+<th align="center">county.fips</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">27003</td>
+<td align="center">27</td>
+<td align="center">003</td>
+</tr>
+<tr class="even">
+<td align="center">27019</td>
+<td align="center">27</td>
+<td align="center">019</td>
+</tr>
+<tr class="odd">
+<td align="center">27025</td>
+<td align="center">27</td>
+<td align="center">025</td>
+</tr>
+<tr class="even">
+<td align="center">27037</td>
+<td align="center">27</td>
+<td align="center">037</td>
+</tr>
+<tr class="odd">
+<td align="center">27053</td>
+<td align="center">27</td>
+<td align="center">053</td>
+</tr>
+<tr class="even">
+<td align="center">27059</td>
+<td align="center">27</td>
+<td align="center">059</td>
+</tr>
+<tr class="odd">
+<td align="center">27123</td>
+<td align="center">27</td>
+<td align="center">123</td>
+</tr>
+<tr class="even">
+<td align="center">27139</td>
+<td align="center">27</td>
+<td align="center">139</td>
+</tr>
+<tr class="odd">
+<td align="center">27141</td>
+<td align="center">27</td>
+<td align="center">141</td>
+</tr>
+<tr class="even">
+<td align="center">27163</td>
+<td align="center">27</td>
+<td align="center">163</td>
+</tr>
+<tr class="odd">
+<td align="center">27171</td>
+<td align="center">27</td>
+<td align="center">171</td>
+</tr>
+<tr class="even">
+<td align="center">55093</td>
+<td align="center">55</td>
+<td align="center">093</td>
+</tr>
+<tr class="odd">
+<td align="center">55109</td>
+<td align="center">55</td>
+<td align="center">109</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>msp.pop1 &lt;-</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">get_acs</span>( <span class="dt">geography =</span> <span class="st">&quot;tract&quot;</span>, <span class="dt">variables =</span> <span class="st">&quot;B01003_001&quot;</span>,</span>
+<span id="cb10-3"><a href="#cb10-3"></a>         <span class="dt">state =</span> <span class="st">&quot;27&quot;</span>, <span class="dt">county =</span> county.fips[state.fips<span class="op">==</span><span class="st">&quot;27&quot;</span>], <span class="dt">geometry =</span> <span class="ot">TRUE</span> ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="st">         </span><span class="kw">select</span>( GEOID, estimate ) <span class="op">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="st">         </span><span class="kw">rename</span>( <span class="dt">POP=</span>estimate )</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=                                                                     |   2%
+  |                                                                            
+  |===                                                                   |   4%
+  |                                                                            
+  |=====                                                                 |   7%
+  |                                                                            
+  |======                                                                |   9%
+  |                                                                            
+  |=======                                                               |  11%
+  |                                                                            
+  |========                                                              |  11%
+  |                                                                            
+  |==========                                                            |  14%
+  |                                                                            
+  |===========                                                           |  16%
+  |                                                                            
+  |============                                                          |  18%
+  |                                                                            
+  |=============                                                         |  19%
+  |                                                                            
+  |===============                                                       |  21%
+  |                                                                            
+  |================                                                      |  23%
+  |                                                                            
+  |==================                                                    |  26%
+  |                                                                            
+  |===================                                                   |  28%
+  |                                                                            
+  |====================                                                  |  29%
+  |                                                                            
+  |=====================                                                 |  30%
+  |                                                                            
+  |=======================                                               |  33%
+  |                                                                            
+  |========================                                              |  35%
+  |                                                                            
+  |=========================                                             |  36%
+  |                                                                            
+  |==========================                                            |  37%
+  |                                                                            
+  |============================                                          |  40%
+  |                                                                            
+  |==============================                                        |  43%
+  |                                                                            
+  |===============================                                       |  45%
+  |                                                                            
+  |=================================                                     |  46%
+  |                                                                            
+  |=================================                                     |  47%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |====================================                                  |  52%
+  |                                                                            
+  |======================================                                |  54%
+  |                                                                            
+  |======================================                                |  55%
+  |                                                                            
+  |=======================================                               |  56%
+  |                                                                            
+  |========================================                              |  57%
+  |                                                                            
+  |=========================================                             |  59%
+  |                                                                            
+  |===========================================                           |  61%
+  |                                                                            
+  |===========================================                           |  62%
+  |                                                                            
+  |=============================================                         |  64%
+  |                                                                            
+  |==============================================                        |  66%
+  |                                                                            
+  |================================================                      |  68%
+  |                                                                            
+  |================================================                      |  69%
+  |                                                                            
+  |==================================================                    |  72%
+  |                                                                            
+  |===================================================                   |  73%
+  |                                                                            
+  |=====================================================                 |  75%
+  |                                                                            
+  |=====================================================                 |  76%
+  |                                                                            
+  |======================================================                |  78%
+  |                                                                            
+  |=======================================================               |  79%
+  |                                                                            
+  |========================================================              |  81%
+  |                                                                            
+  |==========================================================            |  83%
+  |                                                                            
+  |===========================================================           |  85%
+  |                                                                            
+  |============================================================          |  86%
+  |                                                                            
+  |=============================================================         |  88%
+  |                                                                            
+  |===============================================================       |  90%
+  |                                                                            
+  |=================================================================     |  92%
+  |                                                                            
+  |=================================================================     |  93%
+  |                                                                            
+  |==================================================================    |  95%
+  |                                                                            
+  |====================================================================  |  97%
+  |                                                                            
+  |====================================================================  |  98%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>msp.pop2 &lt;-</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">get_acs</span>( <span class="dt">geography =</span> <span class="st">&quot;tract&quot;</span>, <span class="dt">variables =</span> <span class="st">&quot;B01003_001&quot;</span>,</span>
+<span id="cb12-3"><a href="#cb12-3"></a>         <span class="dt">state =</span> <span class="st">&quot;55&quot;</span>, <span class="dt">county =</span> county.fips[state.fips<span class="op">==</span><span class="st">&quot;55&quot;</span>], <span class="dt">geometry =</span> <span class="ot">TRUE</span> ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="st">         </span><span class="kw">select</span>( GEOID, estimate ) <span class="op">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="st">         </span><span class="kw">rename</span>( <span class="dt">POP=</span>estimate )</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=                                                                     |   2%
+  |                                                                            
+  |===                                                                   |   4%
+  |                                                                            
+  |====                                                                  |   5%
+  |                                                                            
+  |=====                                                                 |   7%
+  |                                                                            
+  |======                                                                |   8%
+  |                                                                            
+  |=======                                                               |  10%
+  |                                                                            
+  |========                                                              |  11%
+  |                                                                            
+  |==========                                                            |  14%
+  |                                                                            
+  |===========                                                           |  15%
+  |                                                                            
+  |============                                                          |  17%
+  |                                                                            
+  |=============                                                         |  18%
+  |                                                                            
+  |==============                                                        |  20%
+  |                                                                            
+  |================                                                      |  22%
+  |                                                                            
+  |=================                                                     |  24%
+  |                                                                            
+  |=================                                                     |  25%
+  |                                                                            
+  |===================                                                   |  27%
+  |                                                                            
+  |====================                                                  |  29%
+  |                                                                            
+  |======================                                                |  31%
+  |                                                                            
+  |======================                                                |  32%
+  |                                                                            
+  |========================                                              |  34%
+  |                                                                            
+  |=========================                                             |  36%
+  |                                                                            
+  |==========================                                            |  38%
+  |                                                                            
+  |===========================                                           |  38%
+  |                                                                            
+  |=============================                                         |  41%
+  |                                                                            
+  |==============================                                        |  43%
+  |                                                                            
+  |===============================                                       |  44%
+  |                                                                            
+  |================================                                      |  45%
+  |                                                                            
+  |==================================                                    |  48%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |====================================                                  |  51%
+  |                                                                            
+  |=====================================                                 |  52%
+  |                                                                            
+  |======================================                                |  55%
+  |                                                                            
+  |========================================                              |  56%
+  |                                                                            
+  |=========================================                             |  58%
+  |                                                                            
+  |=========================================                             |  59%
+  |                                                                            
+  |===========================================                           |  61%
+  |                                                                            
+  |===========================================                           |  62%
+  |                                                                            
+  |============================================                          |  63%
+  |                                                                            
+  |==============================================                        |  66%
+  |                                                                            
+  |===============================================                       |  68%
+  |                                                                            
+  |================================================                      |  68%
+  |                                                                            
+  |=================================================                     |  70%
+  |                                                                            
+  |===================================================                   |  73%
+  |                                                                            
+  |====================================================                  |  74%
+  |                                                                            
+  |=====================================================                 |  75%
+  |                                                                            
+  |======================================================                |  77%
+  |                                                                            
+  |=======================================================               |  79%
+  |                                                                            
+  |========================================================              |  80%
+  |                                                                            
+  |=========================================================             |  81%
+  |                                                                            
+  |==========================================================            |  82%
+  |                                                                            
+  |===========================================================           |  84%
+  |                                                                            
+  |============================================================          |  86%
+  |                                                                            
+  |=============================================================         |  86%
+  |                                                                            
+  |==============================================================        |  89%
+  |                                                                            
+  |================================================================      |  91%
+  |                                                                            
+  |=================================================================     |  92%
+  |                                                                            
+  |=================================================================     |  93%
+  |                                                                            
+  |===================================================================   |  96%
+  |                                                                            
+  |====================================================================  |  98%
+  |                                                                            
+  |======================================================================|  99%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>msp.pop &lt;-<span class="st"> </span><span class="kw">rbind</span>( msp.pop1, msp.pop2 )</span></code></pre></div>
+</div>
+<div id="step-3-add-census-data" class="section level2">
+<h2>Step 3: Add Census Data</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>URL &lt;-<span class="st"> &quot;https://github.com/DS4PS/cpp-529-master/raw/master/data/ltdb_std_2010_sample.rds&quot;</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>census.dat &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">gzcon</span>(<span class="kw">url</span>( URL )))</span>
+<span id="cb15-3"><a href="#cb15-3"></a></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="co"># can merge an sf object and data.frame</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>msp &lt;-<span class="st"> </span><span class="kw">merge</span>( msp.pop, census.dat, <span class="dt">by.x=</span><span class="st">&quot;GEOID&quot;</span>, <span class="dt">by.y=</span><span class="st">&quot;tractid&quot;</span> )</span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="co"># make sure there are no empty polygons</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a>msp &lt;-<span class="st"> </span>msp[ <span class="op">!</span><span class="st"> </span><span class="kw">st_is_empty</span>( msp ) , ]</span></code></pre></div>
+<p><strong>DATA DICTIONARY</strong></p>
+<table style="width:61%;">
+<colgroup>
+<col width="15%" />
+<col width="45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">LABEL</th>
+<th align="center">VARIABLE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">tractid</td>
+<td align="center">GEOID</td>
+</tr>
+<tr class="even">
+<td align="center">pnhwht12</td>
+<td align="center">Percent white, non-Hispanic</td>
+</tr>
+<tr class="odd">
+<td align="center">pnhblk12</td>
+<td align="center">Percent black, non-Hispanic</td>
+</tr>
+<tr class="even">
+<td align="center">phisp12</td>
+<td align="center">Percent Hispanic</td>
+</tr>
+<tr class="odd">
+<td align="center">pntv12</td>
+<td align="center">Percent Native American race</td>
+</tr>
+<tr class="even">
+<td align="center">pfb12</td>
+<td align="center">Percent foreign born</td>
+</tr>
+<tr class="odd">
+<td align="center">polang12</td>
+<td align="center">Percent speaking other language at home, age 5 plus</td>
+</tr>
+<tr class="even">
+<td align="center">phs12</td>
+<td align="center">Percent with high school degree or less</td>
+</tr>
+<tr class="odd">
+<td align="center">pcol12</td>
+<td align="center">Percent with 4-year college degree or more</td>
+</tr>
+<tr class="even">
+<td align="center">punemp12</td>
+<td align="center">Percent unemployed</td>
+</tr>
+<tr class="odd">
+<td align="center">pflabf12</td>
+<td align="center">Percent female labor force participation</td>
+</tr>
+<tr class="even">
+<td align="center">pprof12</td>
+<td align="center">Percent professional employees</td>
+</tr>
+<tr class="odd">
+<td align="center">pmanuf12</td>
+<td align="center">Percent manufacturing employees</td>
+</tr>
+<tr class="even">
+<td align="center">pvet12</td>
+<td align="center">Percent veteran</td>
+</tr>
+<tr class="odd">
+<td align="center">psemp12</td>
+<td align="center">Percent self-employed</td>
+</tr>
+<tr class="even">
+<td align="center">hinc12</td>
+<td align="center">Median HH income, total</td>
+</tr>
+<tr class="odd">
+<td align="center">incpc12</td>
+<td align="center">Per capita income</td>
+</tr>
+<tr class="even">
+<td align="center">ppov12</td>
+<td align="center">Percent in poverty, total</td>
+</tr>
+<tr class="odd">
+<td align="center">pown12</td>
+<td align="center">Percent owner-occupied units</td>
+</tr>
+<tr class="even">
+<td align="center">pvac12</td>
+<td align="center">Percent vacant units</td>
+</tr>
+<tr class="odd">
+<td align="center">pmulti12</td>
+<td align="center">Percent multi-family units</td>
+</tr>
+<tr class="even">
+<td align="center">mrent12</td>
+<td align="center">Median rent</td>
+</tr>
+<tr class="odd">
+<td align="center">mhmval12</td>
+<td align="center">Median home value</td>
+</tr>
+<tr class="even">
+<td align="center">p30old12</td>
+<td align="center">Percent structures more than 30 years old</td>
+</tr>
+<tr class="odd">
+<td align="center">p10yrs12</td>
+<td align="center">Percent HH in neighborhood 10 years or less</td>
+</tr>
+<tr class="even">
+<td align="center">p18und12</td>
+<td align="center">Percent 17 and under, total</td>
+</tr>
+<tr class="odd">
+<td align="center">p60up12</td>
+<td align="center">Percent 60 and older, total</td>
+</tr>
+<tr class="even">
+<td align="center">p75up12</td>
+<td align="center">Percent 75 and older, total</td>
+</tr>
+<tr class="odd">
+<td align="center">pmar12</td>
+<td align="center">Percent currently married, not separated</td>
+</tr>
+<tr class="even">
+<td align="center">pwds12</td>
+<td align="center">Percent widowed, divorced and separated</td>
+</tr>
+<tr class="odd">
+<td align="center">pfhh12</td>
+<td align="center">Percent female-headed families with children</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="step-4-transform-the-shapefile-into-a-dorling-cartogram" class="section level2">
+<h2>Step 4: Transform the Shapefile into A Dorling Cartogram</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># convert sf map object to an sp version</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>msp.sp &lt;-<span class="st"> </span><span class="kw">as_Spatial</span>( msp )</span>
+<span id="cb16-3"><a href="#cb16-3"></a></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="kw">class</span>( msp.sp )</span></code></pre></div>
+<pre><code>## [1] &quot;SpatialPolygonsDataFrame&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;sp&quot;</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">plot</span>( msp.sp )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co"># project map and remove empty tracts</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a>msp.sp &lt;-<span class="st"> </span><span class="kw">spTransform</span>( msp.sp, <span class="kw">CRS</span>(<span class="st">&quot;+init=epsg:3395&quot;</span>))</span>
+<span id="cb19-3"><a href="#cb19-3"></a>msp.sp &lt;-<span class="st"> </span>msp.sp[ msp.sp<span class="op">$</span>POP <span class="op">!=</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>(<span class="op">!</span><span class="st"> </span><span class="kw">is.na</span>( msp.sp<span class="op">$</span>POP )) , ]</span>
+<span id="cb19-4"><a href="#cb19-4"></a></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="co"># convert census tract polygons to dorling cartogram</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="co"># no idea why k=0.03 works, but it does - default is k=5</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a>msp.sp<span class="op">$</span>pop.w &lt;-<span class="st"> </span>msp.sp<span class="op">$</span>POP <span class="op">/</span><span class="st"> </span><span class="dv">9000</span> <span class="co"># max(msp.sp$POP)   # standardizes it to max of 1.5</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a>msp_dorling &lt;-<span class="st"> </span><span class="kw">cartogram_dorling</span>( <span class="dt">x=</span>msp.sp, <span class="dt">weight=</span><span class="st">&quot;pop.w&quot;</span>, <span class="dt">k=</span><span class="fl">0.05</span> )</span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="kw">plot</span>( msp_dorling )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-11-2.png" width="960" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">tm_shape</span>( msp_dorling ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">size=</span><span class="st">&quot;POP&quot;</span>, <span class="dt">col=</span><span class="st">&quot;hinc12&quot;</span>, <span class="dt">n=</span><span class="dv">7</span>, <span class="dt">style=</span><span class="st">&quot;quantile&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Spectral&quot;</span> ) </span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-11-3.png" width="960" /></p>
+<p>Improve the aestetics with a bounding box. I use the <strong>locator()</strong> function to get location.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jx5y0EdIUT4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">tm_shape</span>( msp_dorling ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">size=</span><span class="st">&quot;POP&quot;</span>, <span class="dt">col=</span><span class="st">&quot;hinc12&quot;</span>, <span class="dt">n=</span><span class="dv">7</span>, <span class="dt">style=</span><span class="st">&quot;quantile&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Spectral&quot;</span> ) </span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># user-defined bounding box to move slocer to subjects </span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>bb &lt;-<span class="st"> </span><span class="kw">st_bbox</span>( <span class="kw">c</span>( <span class="dt">xmin =</span>  <span class="dv">-10451823</span>, <span class="dt">xmax =</span> <span class="dv">-10324525</span>, </span>
+<span id="cb22-3"><a href="#cb22-3"></a>                  <span class="dt">ymax =</span> <span class="dv">5639769</span>, <span class="dt">ymin =</span> <span class="dv">5491665</span> ), </span>
+<span id="cb22-4"><a href="#cb22-4"></a>               <span class="dt">crs =</span> <span class="kw">st_crs</span>(<span class="st">&quot;+init=epsg:3395&quot;</span>))</span>
+<span id="cb22-5"><a href="#cb22-5"></a></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="kw">tm_shape</span>( msp_dorling, <span class="dt">bbox=</span>bb ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">col=</span><span class="st">&quot;hinc12&quot;</span>, <span class="dt">n=</span><span class="dv">10</span>, <span class="dt">style=</span><span class="st">&quot;quantile&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Spectral&quot;</span> ) <span class="op">+</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="st">  </span><span class="kw">tm_layout</span>( <span class="st">&quot;Dorling Cartogram&quot;</span>, <span class="dt">title.position=</span><span class="kw">c</span>(<span class="st">&quot;right&quot;</span>,<span class="st">&quot;top&quot;</span>) )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-12-2.png" width="960" /></p>
+</div>
+</div>
+<div id="clustering" class="section level1">
+<h1>Clustering</h1>
+<p>We will use the same set of variables as last week. The data is transformed into z-score so that they are all on similar scales.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>keep.these &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pnhwht12&quot;</span>, <span class="st">&quot;pnhblk12&quot;</span>, <span class="st">&quot;phisp12&quot;</span>, <span class="st">&quot;pntv12&quot;</span>, <span class="st">&quot;pfb12&quot;</span>, <span class="st">&quot;polang12&quot;</span>, </span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="st">&quot;phs12&quot;</span>, <span class="st">&quot;pcol12&quot;</span>, <span class="st">&quot;punemp12&quot;</span>, <span class="st">&quot;pflabf12&quot;</span>, <span class="st">&quot;pprof12&quot;</span>, <span class="st">&quot;pmanuf12&quot;</span>, </span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="st">&quot;pvet12&quot;</span>, <span class="st">&quot;psemp12&quot;</span>, <span class="st">&quot;hinc12&quot;</span>, <span class="st">&quot;incpc12&quot;</span>, <span class="st">&quot;ppov12&quot;</span>, <span class="st">&quot;pown12&quot;</span>, </span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="st">&quot;pvac12&quot;</span>, <span class="st">&quot;pmulti12&quot;</span>, <span class="st">&quot;mrent12&quot;</span>, <span class="st">&quot;mhmval12&quot;</span>, <span class="st">&quot;p30old12&quot;</span>, <span class="st">&quot;p10yrs12&quot;</span>, </span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="st">&quot;p18und12&quot;</span>, <span class="st">&quot;p60up12&quot;</span>, <span class="st">&quot;p75up12&quot;</span>, <span class="st">&quot;pmar12&quot;</span>, <span class="st">&quot;pwds12&quot;</span>, <span class="st">&quot;pfhh12&quot;</span>)</span>
+<span id="cb23-6"><a href="#cb23-6"></a></span>
+<span id="cb23-7"><a href="#cb23-7"></a>d1 &lt;-<span class="st"> </span>msp_dorling<span class="op">@</span>data</span>
+<span id="cb23-8"><a href="#cb23-8"></a>d2 &lt;-<span class="st"> </span><span class="kw">select</span>( d1, keep.these )</span>
+<span id="cb23-9"><a href="#cb23-9"></a>d3 &lt;-<span class="st"> </span><span class="kw">apply</span>( d2, <span class="dv">2</span>, scale )</span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="kw">head</span>( d3[,<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>] ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pander</span>()</span></code></pre></div>
+<table style="width:90%;">
+<colgroup>
+<col width="15%" />
+<col width="15%" />
+<col width="13%" />
+<col width="16%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">pnhwht12</th>
+<th align="center">pnhblk12</th>
+<th align="center">phisp12</th>
+<th align="center">pntv12</th>
+<th align="center">pfb12</th>
+<th align="center">polang12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">0.9411</td>
+<td align="center">-0.5724</td>
+<td align="center">-0.7285</td>
+<td align="center">-0.4538</td>
+<td align="center">-1.025</td>
+<td align="center">-0.9737</td>
+</tr>
+<tr class="even">
+<td align="center">0.9847</td>
+<td align="center">-0.7166</td>
+<td align="center">-0.6991</td>
+<td align="center">-0.137</td>
+<td align="center">-1.009</td>
+<td align="center">-1.072</td>
+</tr>
+<tr class="odd">
+<td align="center">1.004</td>
+<td align="center">-0.7088</td>
+<td align="center">-0.7173</td>
+<td align="center">-0.004358</td>
+<td align="center">-0.8534</td>
+<td align="center">-1.046</td>
+</tr>
+<tr class="even">
+<td align="center">0.8184</td>
+<td align="center">-0.7244</td>
+<td align="center">-0.7215</td>
+<td align="center">-0.1075</td>
+<td align="center">-0.9287</td>
+<td align="center">-0.4711</td>
+</tr>
+<tr class="odd">
+<td align="center">0.8448</td>
+<td align="center">-0.7244</td>
+<td align="center">-0.6332</td>
+<td align="center">1.093</td>
+<td align="center">-1.117</td>
+<td align="center">-1.004</td>
+</tr>
+<tr class="even">
+<td align="center">0.9798</td>
+<td align="center">-0.7097</td>
+<td align="center">-0.7775</td>
+<td align="center">-0.4538</td>
+<td align="center">-0.8511</td>
+<td align="center">-0.7984</td>
+</tr>
+</tbody>
+</table>
+<div id="prepare-data-for-clustering" class="section level2">
+<h2>Prepare Data for Clustering</h2>
+<p>We transform all of the variables to z scorse so they are on the same scale while clustering. This ensures that each census variable has equal weight. Z-scores typically range from about -3 to +3 with a mean of zero.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>keep.these &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pnhwht12&quot;</span>, <span class="st">&quot;pnhblk12&quot;</span>, <span class="st">&quot;phisp12&quot;</span>, <span class="st">&quot;pntv12&quot;</span>, <span class="st">&quot;pfb12&quot;</span>, <span class="st">&quot;polang12&quot;</span>, </span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="st">&quot;phs12&quot;</span>, <span class="st">&quot;pcol12&quot;</span>, <span class="st">&quot;punemp12&quot;</span>, <span class="st">&quot;pflabf12&quot;</span>, <span class="st">&quot;pprof12&quot;</span>, <span class="st">&quot;pmanuf12&quot;</span>, </span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="st">&quot;pvet12&quot;</span>, <span class="st">&quot;psemp12&quot;</span>, <span class="st">&quot;hinc12&quot;</span>, <span class="st">&quot;incpc12&quot;</span>, <span class="st">&quot;ppov12&quot;</span>, <span class="st">&quot;pown12&quot;</span>, </span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="st">&quot;pvac12&quot;</span>, <span class="st">&quot;pmulti12&quot;</span>, <span class="st">&quot;mrent12&quot;</span>, <span class="st">&quot;mhmval12&quot;</span>, <span class="st">&quot;p30old12&quot;</span>, <span class="st">&quot;p10yrs12&quot;</span>, </span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="st">&quot;p18und12&quot;</span>, <span class="st">&quot;p60up12&quot;</span>, <span class="st">&quot;p75up12&quot;</span>, <span class="st">&quot;pmar12&quot;</span>, <span class="st">&quot;pwds12&quot;</span>, <span class="st">&quot;pfhh12&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6"></a></span>
+<span id="cb24-7"><a href="#cb24-7"></a>d2 &lt;-<span class="st"> </span><span class="kw">select</span>( d1, keep.these )</span>
+<span id="cb24-8"><a href="#cb24-8"></a>d3 &lt;-<span class="st"> </span><span class="kw">apply</span>( d2, <span class="dv">2</span>, scale )</span>
+<span id="cb24-9"><a href="#cb24-9"></a></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="kw">head</span>( d3[,<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>] ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pander</span>()</span></code></pre></div>
+<table style="width:90%;">
+<colgroup>
+<col width="15%" />
+<col width="15%" />
+<col width="13%" />
+<col width="16%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">pnhwht12</th>
+<th align="center">pnhblk12</th>
+<th align="center">phisp12</th>
+<th align="center">pntv12</th>
+<th align="center">pfb12</th>
+<th align="center">polang12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">0.9411</td>
+<td align="center">-0.5724</td>
+<td align="center">-0.7285</td>
+<td align="center">-0.4538</td>
+<td align="center">-1.025</td>
+<td align="center">-0.9737</td>
+</tr>
+<tr class="even">
+<td align="center">0.9847</td>
+<td align="center">-0.7166</td>
+<td align="center">-0.6991</td>
+<td align="center">-0.137</td>
+<td align="center">-1.009</td>
+<td align="center">-1.072</td>
+</tr>
+<tr class="odd">
+<td align="center">1.004</td>
+<td align="center">-0.7088</td>
+<td align="center">-0.7173</td>
+<td align="center">-0.004358</td>
+<td align="center">-0.8534</td>
+<td align="center">-1.046</td>
+</tr>
+<tr class="even">
+<td align="center">0.8184</td>
+<td align="center">-0.7244</td>
+<td align="center">-0.7215</td>
+<td align="center">-0.1075</td>
+<td align="center">-0.9287</td>
+<td align="center">-0.4711</td>
+</tr>
+<tr class="odd">
+<td align="center">0.8448</td>
+<td align="center">-0.7244</td>
+<td align="center">-0.6332</td>
+<td align="center">1.093</td>
+<td align="center">-1.117</td>
+<td align="center">-1.004</td>
+</tr>
+<tr class="even">
+<td align="center">0.9798</td>
+<td align="center">-0.7097</td>
+<td align="center">-0.7775</td>
+<td align="center">-0.4538</td>
+<td align="center">-0.8511</td>
+<td align="center">-0.7984</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="perform-cluster-analysis" class="section level2">
+<h2>Perform Cluster Analysis</h2>
+<p>For more details on cluster analysis visit the <a href="https://cran.r-project.org/web/packages/mclust/vignettes/mclust.html"><strong>mclust</strong> tutorial</a>.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co"># library( mclust )</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">set.seed</span>( <span class="dv">1234</span> )</span>
+<span id="cb25-3"><a href="#cb25-3"></a>fit &lt;-<span class="st"> </span><span class="kw">Mclust</span>( d3 )</span>
+<span id="cb25-4"><a href="#cb25-4"></a>msp_dorling<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">as.factor</span>( fit<span class="op">$</span>classification )</span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="kw">summary</span>( fit )</span></code></pre></div>
+<pre><code>## ---------------------------------------------------- 
+## Gaussian finite mixture model fitted by EM algorithm 
+## ---------------------------------------------------- 
+## 
+## Mclust VVE (ellipsoidal, equal orientation) model with 7 components: 
+## 
+##  log-likelihood   n  df       BIC       ICL
+##       -15370.41 771 861 -36464.47 -36533.72
+## 
+## Clustering table:
+##   1   2   3   4   5   6   7 
+##  74 151 112 237  89  63  45</code></pre>
+<p>Some visuals of model fit statistics (doesn’t work well with a lot of variables):</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">plot</span>( fit, <span class="dt">what =</span> <span class="st">&quot;classification&quot;</span> )</span></code></pre></div>
+</div>
+<div id="identifying-neighborhood-clusters" class="section level2">
+<h2>Identifying Neighborhood Clusters</h2>
+<p>Build the charts to compare census characteristics across the groups.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>df.pct &lt;-<span class="st"> </span><span class="kw">sapply</span>( d2, ntile, <span class="dv">100</span> )</span>
+<span id="cb28-2"><a href="#cb28-2"></a>d4 &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>( df.pct )</span>
+<span id="cb28-3"><a href="#cb28-3"></a>d4<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">as.factor</span>( <span class="kw">paste0</span>(<span class="st">&quot;GROUP-&quot;</span>,fit<span class="op">$</span>classification) )</span>
+<span id="cb28-4"><a href="#cb28-4"></a></span>
+<span id="cb28-5"><a href="#cb28-5"></a>num.groups &lt;-<span class="st"> </span><span class="kw">length</span>( <span class="kw">unique</span>( fit<span class="op">$</span>classification ) )</span>
+<span id="cb28-6"><a href="#cb28-6"></a></span>
+<span id="cb28-7"><a href="#cb28-7"></a>stats &lt;-<span class="st"> </span></span>
+<span id="cb28-8"><a href="#cb28-8"></a>d4 <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="st">  </span><span class="kw">group_by</span>( cluster ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb28-10"><a href="#cb28-10"></a><span class="st">  </span><span class="kw">summarise_each</span>( <span class="kw">funs</span>(mean) )</span>
+<span id="cb28-11"><a href="#cb28-11"></a></span>
+<span id="cb28-12"><a href="#cb28-12"></a>t &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="kw">t</span>(stats), <span class="dt">stringsAsFactors=</span>F )</span>
+<span id="cb28-13"><a href="#cb28-13"></a><span class="kw">names</span>(t) &lt;-<span class="st"> </span><span class="kw">paste0</span>( <span class="st">&quot;GROUP.&quot;</span>, <span class="dv">1</span><span class="op">:</span>num.groups )</span>
+<span id="cb28-14"><a href="#cb28-14"></a>t &lt;-<span class="st"> </span>t[<span class="op">-</span><span class="dv">1</span>,]</span>
+<span id="cb28-15"><a href="#cb28-15"></a></span>
+<span id="cb28-16"><a href="#cb28-16"></a></span>
+<span id="cb28-17"><a href="#cb28-17"></a></span>
+<span id="cb28-18"><a href="#cb28-18"></a><span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>num.groups )</span>
+<span id="cb28-19"><a href="#cb28-19"></a>{</span>
+<span id="cb28-20"><a href="#cb28-20"></a>  z &lt;-<span class="st"> </span>t[,i]</span>
+<span id="cb28-21"><a href="#cb28-21"></a>  <span class="kw">plot</span>( <span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>), <span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">75</span>,<span class="dv">100</span>), </span>
+<span id="cb28-22"><a href="#cb28-22"></a>        <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>, <span class="dt">yaxt=</span><span class="st">&quot;n&quot;</span>,</span>
+<span id="cb28-23"><a href="#cb28-23"></a>        <span class="dt">xlab=</span><span class="st">&quot;Percentile&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;&quot;</span>,</span>
+<span id="cb28-24"><a href="#cb28-24"></a>        <span class="dt">main=</span><span class="kw">paste</span>(<span class="st">&quot;GROUP&quot;</span>,i) )</span>
+<span id="cb28-25"><a href="#cb28-25"></a>  <span class="kw">abline</span>( <span class="dt">v=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">25</span>), <span class="dt">lty=</span><span class="dv">3</span>, <span class="dt">lwd=</span><span class="fl">1.5</span>, <span class="dt">col=</span><span class="st">&quot;gray90&quot;</span> )</span>
+<span id="cb28-26"><a href="#cb28-26"></a>  <span class="kw">segments</span>( <span class="dt">y0=</span><span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, <span class="dt">x0=</span><span class="dv">0</span>, <span class="dt">x1=</span><span class="dv">100</span>, <span class="dt">col=</span><span class="st">&quot;gray70&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span> )</span>
+<span id="cb28-27"><a href="#cb28-27"></a>  <span class="kw">text</span>( <span class="fl">-0.2</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, data.dictionary<span class="op">$</span>VARIABLE[<span class="op">-</span><span class="dv">1</span>], <span class="dt">cex=</span><span class="fl">0.85</span>, <span class="dt">pos=</span><span class="dv">2</span> )</span>
+<span id="cb28-28"><a href="#cb28-28"></a>  <span class="kw">points</span>( z, <span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="st">&quot;firebrick&quot;</span>, <span class="dt">cex=</span><span class="fl">1.5</span> )</span>
+<span id="cb28-29"><a href="#cb28-29"></a>  <span class="kw">axis</span>( <span class="dt">side=</span><span class="dv">1</span>, <span class="dt">at=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="dv">100</span>), <span class="dt">col.axis=</span><span class="st">&quot;gray&quot;</span>, <span class="dt">col=</span><span class="st">&quot;gray&quot;</span> )</span>
+<span id="cb28-30"><a href="#cb28-30"></a>}</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-1.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-2.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-3.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-4.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-5.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-6.png" width="960" /><img src="lab-04-instructions_files/figure-html/unnamed-chunk-17-7.png" width="960" /></p>
+<p>You are now ready to identify meaningful labels for your clusters!</p>
+</div>
+</div>
+<div id="variable-selection-for-clustering" class="section level1">
+<h1>Variable Selection for Clustering</h1>
+<p>We can compare the model created with reliable measures of community stability that were identified from the first lab, and compare this model to one created from three census variables, and one created from three reliable indices of neighborhood stability generated from Lab 01:</p>
+<p><strong>Neighborhood transitivity (Cronbach’s Alpha 0.8)</strong></p>
+<ul>
+<li>% homes that are owner occupied<br />
+</li>
+<li>% of homes that are multi-family<br />
+</li>
+<li>% of residents that have been in the neighborhood under 10 years<br />
+</li>
+<li>% of households currently not married<br />
+</li>
+<li>% of households led by single female</li>
+</ul>
+<p><strong>Neighborhood Diversity (Cronbach’s Alpha 0.78)</strong></p>
+<ul>
+<li>% white<br />
+</li>
+<li>% black<br />
+</li>
+<li>% Hispanic<br />
+</li>
+<li>% foreign born<br />
+</li>
+<li>% speaking another language at home</li>
+</ul>
+<p><strong>Human Capital (Cronbach’s Alpha 0.93)</strong></p>
+<ul>
+<li>% adults with college degree<br />
+</li>
+<li>% adults with a high school degree or less<br />
+</li>
+<li>% employed in professional industries<br />
+</li>
+<li>Median household income + Per capita income (these give the high score, but cheating a little)<br />
+</li>
+<li>Median home value (drops alpha to 0.92)</li>
+</ul>
+<p>You will create each index by adding the component variables together:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>d3 &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(d3)</span>
+<span id="cb29-2"><a href="#cb29-2"></a>dim1 &lt;-<span class="st"> </span>d3<span class="op">$</span>pown12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pmulti12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>p10yrs12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pwds12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pfhh12   </span>
+<span id="cb29-3"><a href="#cb29-3"></a>dim2 &lt;-<span class="st"> </span>d3<span class="op">$</span>pnhwht12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pnhblk12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>phisp12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pfb12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>polang12</span>
+<span id="cb29-4"><a href="#cb29-4"></a>dim3 &lt;-<span class="st"> </span>d3<span class="op">$</span>pcol12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>phs12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>pprof12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>hinc12 <span class="op">+</span><span class="st"> </span>d3<span class="op">$</span>mhmval12</span>
+<span id="cb29-5"><a href="#cb29-5"></a></span>
+<span id="cb29-6"><a href="#cb29-6"></a></span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="kw">plot</span>( dim1, dim2, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="kw">gray</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dt">cex=</span><span class="fl">1.5</span> )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-18-1.png" width="960" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">plot</span>( dim1, dim3, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="kw">gray</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dt">cex=</span><span class="fl">1.5</span> )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-18-2.png" width="960" /></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">plot</span>( dim2, dim3, <span class="dt">pch=</span><span class="dv">19</span>, <span class="dt">col=</span><span class="kw">gray</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>), <span class="dt">cex=</span><span class="fl">1.5</span> )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-18-3.png" width="960" /></p>
+<p>I arbitrarily selected three census variables to compare methods. Here we are using % of population 18 and under, % of female labor force participation, and household income.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co"># data set of three indices</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a>d22 &lt;-<span class="st"> </span><span class="kw">data.frame</span>( dim1, dim2, dim3 )</span>
+<span id="cb32-3"><a href="#cb32-3"></a>fit2 &lt;-<span class="st"> </span><span class="kw">Mclust</span>( d22 )</span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="kw">summary</span>( fit2 )</span></code></pre></div>
+<pre><code>## ---------------------------------------------------- 
+## Gaussian finite mixture model fitted by EM algorithm 
+## ---------------------------------------------------- 
+## 
+## Mclust VVI (diagonal, varying volume and shape) model with 5 components: 
+## 
+##  log-likelihood   n df       BIC       ICL
+##       -4626.543 771 34 -9479.108 -9849.923
+## 
+## Clustering table:
+##   1   2   3   4   5 
+## 156  78 180 268  89</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>msp_dorling<span class="op">$</span>cluster2 &lt;-<span class="st"> </span><span class="kw">as.factor</span>( fit2<span class="op">$</span>classification )</span>
+<span id="cb34-2"><a href="#cb34-2"></a></span>
+<span id="cb34-3"><a href="#cb34-3"></a><span class="co"># dataset of three census variables </span></span>
+<span id="cb34-4"><a href="#cb34-4"></a>d33 &lt;-<span class="st"> </span><span class="kw">data.frame</span>( d3<span class="op">$</span>p18und12, d3<span class="op">$</span>pflabf12, d3<span class="op">$</span>hinc12 )</span>
+<span id="cb34-5"><a href="#cb34-5"></a>fit3 &lt;-<span class="st"> </span><span class="kw">Mclust</span>( d33 )</span>
+<span id="cb34-6"><a href="#cb34-6"></a><span class="kw">summary</span>( fit3 )</span></code></pre></div>
+<pre><code>## ---------------------------------------------------- 
+## Gaussian finite mixture model fitted by EM algorithm 
+## ---------------------------------------------------- 
+## 
+## Mclust VEV (ellipsoidal, equal shape) model with 3 components: 
+## 
+##  log-likelihood   n df       BIC       ICL
+##       -3046.201 771 25 -6258.594 -6747.571
+## 
+## Clustering table:
+##   1   2   3 
+## 187 263 321</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>msp_dorling<span class="op">$</span>cluster3 &lt;-<span class="st"> </span><span class="kw">as.factor</span>( fit3<span class="op">$</span>classification )</span>
+<span id="cb36-2"><a href="#cb36-2"></a></span>
+<span id="cb36-3"><a href="#cb36-3"></a></span>
+<span id="cb36-4"><a href="#cb36-4"></a></span>
+<span id="cb36-5"><a href="#cb36-5"></a><span class="kw">tmap_mode</span>(<span class="st">&quot;plot&quot;</span>)</span>
+<span id="cb36-6"><a href="#cb36-6"></a><span class="kw">tmap_style</span>(<span class="st">&quot;cobalt&quot;</span>)</span>
+<span id="cb36-7"><a href="#cb36-7"></a></span>
+<span id="cb36-8"><a href="#cb36-8"></a>tm1 &lt;-<span class="st"> </span></span>
+<span id="cb36-9"><a href="#cb36-9"></a><span class="kw">tm_shape</span>( msp_dorling, <span class="dt">bbox=</span>bb ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb36-10"><a href="#cb36-10"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">col=</span><span class="st">&quot;cluster&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Accent&quot;</span>  )</span>
+<span id="cb36-11"><a href="#cb36-11"></a></span>
+<span id="cb36-12"><a href="#cb36-12"></a>tm2 &lt;-<span class="st"> </span></span>
+<span id="cb36-13"><a href="#cb36-13"></a><span class="kw">tm_shape</span>( msp_dorling, <span class="dt">bbox=</span>bb ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb36-14"><a href="#cb36-14"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">col=</span><span class="st">&quot;cluster2&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Accent&quot;</span>  )</span>
+<span id="cb36-15"><a href="#cb36-15"></a></span>
+<span id="cb36-16"><a href="#cb36-16"></a>tm3 &lt;-<span class="st"> </span></span>
+<span id="cb36-17"><a href="#cb36-17"></a><span class="kw">tm_shape</span>( msp_dorling, <span class="dt">bbox=</span>bb ) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb36-18"><a href="#cb36-18"></a><span class="st">  </span><span class="kw">tm_polygons</span>( <span class="dt">col=</span><span class="st">&quot;cluster3&quot;</span>, <span class="dt">palette=</span><span class="st">&quot;Accent&quot;</span>  )</span>
+<span id="cb36-19"><a href="#cb36-19"></a></span>
+<span id="cb36-20"><a href="#cb36-20"></a></span>
+<span id="cb36-21"><a href="#cb36-21"></a><span class="kw">tmap_arrange</span>( tm1, tm2, tm3 )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-19-1.png" width="960" /></p>
+<p>This function does not work well using the model with 30 census variables because the plots are so small, but when you plot the model results from the clustering procedure is will show the relationship between each variable, and color-code each group. This helps you visualize how each set of variables is contributing the the clusters that were identified.</p>
+<p>Recall that similar to how regression models are trying to select lines that minimize the residual errors in the model, clustering tries to select groups (assign tracts to groups) in a way that maximizes the overall distance between group centroids.</p>
+<p>You can see here that the three indices we created do a better job of creating meaningful groups that the three census variables. When selecting variables for your model it is better to have independent measures - highly-correlated input variables will be explaining the same variance in your populations, and thus provide redundant information that is not useful for identifying groups.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">plot</span>( fit3, <span class="dt">what =</span> <span class="st">&quot;classification&quot;</span> )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-20-1.png" width="960" /></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">plot</span>( fit2, <span class="dt">what =</span> <span class="st">&quot;classification&quot;</span> )</span></code></pre></div>
+<p><img src="lab-04-instructions_files/figure-html/unnamed-chunk-20-2.png" width="960" /></p>
+<hr />
+<p><br> <br></p>
+</div>
+<div id="lab-instructions" class="section level1">
+<h1>Lab Instructions</h1>
+<div id="part-1" class="section level2">
+<h2>PART 1:</h2>
+<p>Select a city, build your dataset, and cluster the neighborhoods in your city using the same techniques we used last week.</p>
+<p>Show the clusters and the cluster demographics for the new city.</p>
+<p>Report the labels you have assigned to each group.</p>
+<p><br></p>
+</div>
+<div id="part-2" class="section level2">
+<h2>PART 2:</h2>
+<p>Part 2 explores how the input data impacts your clusters.</p>
+<p>You will use your full model with 30 census variables as the reference point, then do the following:</p>
+<p><strong>Question 1:</strong></p>
+<p>Compare that set of groups to the groups identified by the model using only the three indices above. Are they identifying the same groups? Which group is missing?</p>
+<p><strong>Question 2:</strong></p>
+<p>Select three census variables from the full list of 30, and create a new clustering model. How many groups are generated? Are they similar groups to the full model? Are our inferences significantly different if we have a limited amount of data to draw from?</p>
+<p>Report your three variables and describe the groups that are identified.</p>
+<p>You can use the following to create data dictionaries to provide informative labels to the group percentile plots:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># use dput( data.dictionary ) to create reproducible data frames for RMD files</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>data.dictionary &lt;-<span class="st"> </span></span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="kw">structure</span>(<span class="kw">list</span>(<span class="dt">LABEL =</span> <span class="kw">c</span>(<span class="st">&quot;pnhwht12&quot;</span>, <span class="st">&quot;pnhblk12&quot;</span>, <span class="st">&quot;phisp12&quot;</span>, </span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="st">&quot;pntv12&quot;</span>, <span class="st">&quot;pfb12&quot;</span>, <span class="st">&quot;polang12&quot;</span>, <span class="st">&quot;phs12&quot;</span>, <span class="st">&quot;pcol12&quot;</span>, <span class="st">&quot;punemp12&quot;</span>, </span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="st">&quot;pflabf12&quot;</span>, <span class="st">&quot;pprof12&quot;</span>, <span class="st">&quot;pmanuf12&quot;</span>, <span class="st">&quot;pvet12&quot;</span>, <span class="st">&quot;psemp12&quot;</span>, <span class="st">&quot;hinc12&quot;</span>, </span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="st">&quot;incpc12&quot;</span>, <span class="st">&quot;ppov12&quot;</span>, <span class="st">&quot;pown12&quot;</span>, <span class="st">&quot;pvac12&quot;</span>, <span class="st">&quot;pmulti12&quot;</span>, <span class="st">&quot;mrent12&quot;</span>, </span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="st">&quot;mhmval12&quot;</span>, <span class="st">&quot;p30old12&quot;</span>, <span class="st">&quot;p10yrs12&quot;</span>, <span class="st">&quot;p18und12&quot;</span>, <span class="st">&quot;p60up12&quot;</span>, <span class="st">&quot;p75up12&quot;</span>, </span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="st">&quot;pmar12&quot;</span>, <span class="st">&quot;pwds12&quot;</span>, <span class="st">&quot;pfhh12&quot;</span>), <span class="dt">VARIABLE =</span> <span class="kw">c</span>(<span class="st">&quot;Percent white, non-Hispanic&quot;</span>, </span>
+<span id="cb39-9"><a href="#cb39-9"></a><span class="st">&quot;Percent black, non-Hispanic&quot;</span>, <span class="st">&quot;Percent Hispanic&quot;</span>, <span class="st">&quot;Percent Native American race&quot;</span>, </span>
+<span id="cb39-10"><a href="#cb39-10"></a><span class="st">&quot;Percent foreign born&quot;</span>, <span class="st">&quot;Percent speaking other language at home, age 5 plus&quot;</span>, </span>
+<span id="cb39-11"><a href="#cb39-11"></a><span class="st">&quot;Percent with high school degree or less&quot;</span>, <span class="st">&quot;Percent with 4-year college degree or more&quot;</span>, </span>
+<span id="cb39-12"><a href="#cb39-12"></a><span class="st">&quot;Percent unemployed&quot;</span>, <span class="st">&quot;Percent female labor force participation&quot;</span>, </span>
+<span id="cb39-13"><a href="#cb39-13"></a><span class="st">&quot;Percent professional employees&quot;</span>, <span class="st">&quot;Percent manufacturing employees&quot;</span>, </span>
+<span id="cb39-14"><a href="#cb39-14"></a><span class="st">&quot;Percent veteran&quot;</span>, <span class="st">&quot;Percent self-employed&quot;</span>, <span class="st">&quot;Median HH income, total&quot;</span>, </span>
+<span id="cb39-15"><a href="#cb39-15"></a><span class="st">&quot;Per capita income&quot;</span>, <span class="st">&quot;Percent in poverty, total&quot;</span>, <span class="st">&quot;Percent owner-occupied units&quot;</span>, </span>
+<span id="cb39-16"><a href="#cb39-16"></a><span class="st">&quot;Percent vacant units&quot;</span>, <span class="st">&quot;Percent multi-family units&quot;</span>, <span class="st">&quot;Median rent&quot;</span>, </span>
+<span id="cb39-17"><a href="#cb39-17"></a><span class="st">&quot;Median home value&quot;</span>, <span class="st">&quot;Percent structures more than 30 years old&quot;</span>, </span>
+<span id="cb39-18"><a href="#cb39-18"></a><span class="st">&quot;Percent HH in neighborhood 10 years or less&quot;</span>, <span class="st">&quot;Percent 17 and under, total&quot;</span>, </span>
+<span id="cb39-19"><a href="#cb39-19"></a><span class="st">&quot;Percent 60 and older, total&quot;</span>, <span class="st">&quot;Percent 75 and older, total&quot;</span>, </span>
+<span id="cb39-20"><a href="#cb39-20"></a><span class="st">&quot;Percent currently married, not separated&quot;</span>, <span class="st">&quot;Percent widowed, divorced and separated&quot;</span>, </span>
+<span id="cb39-21"><a href="#cb39-21"></a><span class="st">&quot;Percent female-headed families with children&quot;</span>)), <span class="dt">class =</span> <span class="st">&quot;data.frame&quot;</span>, <span class="dt">row.names =</span> <span class="kw">c</span>(<span class="ot">NA</span>, </span>
+<span id="cb39-22"><a href="#cb39-22"></a><span class="op">-</span>30L))</span>
+<span id="cb39-23"><a href="#cb39-23"></a></span>
+<span id="cb39-24"><a href="#cb39-24"></a></span>
+<span id="cb39-25"><a href="#cb39-25"></a><span class="co"># list variables for clustering</span></span>
+<span id="cb39-26"><a href="#cb39-26"></a>use.these &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pnhwht12&quot;</span>, <span class="st">&quot;pnhblk12&quot;</span>, <span class="st">&quot;phisp12&quot;</span>, <span class="st">&quot;pntv12&quot;</span>, <span class="st">&quot;pfb12&quot;</span>, <span class="st">&quot;polang12&quot;</span>, </span>
+<span id="cb39-27"><a href="#cb39-27"></a>               <span class="st">&quot;phs12&quot;</span>, <span class="st">&quot;pcol12&quot;</span>, <span class="st">&quot;punemp12&quot;</span>, <span class="st">&quot;pflabf12&quot;</span>, <span class="st">&quot;pprof12&quot;</span>, <span class="st">&quot;pmanuf12&quot;</span>, </span>
+<span id="cb39-28"><a href="#cb39-28"></a>               <span class="st">&quot;pvet12&quot;</span>, <span class="st">&quot;psemp12&quot;</span>, <span class="st">&quot;hinc12&quot;</span>, <span class="st">&quot;incpc12&quot;</span>, <span class="st">&quot;ppov12&quot;</span>, <span class="st">&quot;pown12&quot;</span>, </span>
+<span id="cb39-29"><a href="#cb39-29"></a>               <span class="st">&quot;pvac12&quot;</span>, <span class="st">&quot;pmulti12&quot;</span>, <span class="st">&quot;mrent12&quot;</span>, <span class="st">&quot;mhmval12&quot;</span>, <span class="st">&quot;p30old12&quot;</span>, <span class="st">&quot;p10yrs12&quot;</span>, </span>
+<span id="cb39-30"><a href="#cb39-30"></a>               <span class="st">&quot;p18und12&quot;</span>, <span class="st">&quot;p60up12&quot;</span>, <span class="st">&quot;p75up12&quot;</span>, <span class="st">&quot;pmar12&quot;</span>, <span class="st">&quot;pwds12&quot;</span>, <span class="st">&quot;pfhh12&quot;</span>)</span>
+<span id="cb39-31"><a href="#cb39-31"></a></span>
+<span id="cb39-32"><a href="#cb39-32"></a>dd.cluster1 &lt;-<span class="st"> </span>data.dictionary[ data.dictionary<span class="op">$</span>LABEL <span class="op">%in%</span><span class="st"> </span>use.these , ]</span>
+<span id="cb39-33"><a href="#cb39-33"></a></span>
+<span id="cb39-34"><a href="#cb39-34"></a></span>
+<span id="cb39-35"><a href="#cb39-35"></a><span class="co"># cluster 2</span></span>
+<span id="cb39-36"><a href="#cb39-36"></a>LABEL &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;dim1&quot;</span>,<span class="st">&quot;dim2&quot;</span>,<span class="st">&quot;dim3&quot;</span>)</span>
+<span id="cb39-37"><a href="#cb39-37"></a>VARIABLE &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Neighborhood transitivity&quot;</span>,<span class="st">&quot;Neighborhood diversity&quot;</span>,<span class="st">&quot;Human capital&quot;</span>)</span>
+<span id="cb39-38"><a href="#cb39-38"></a>dd.cluster2 &lt;-<span class="st"> </span><span class="kw">data.frame</span>( LABEL, VARIABLE )</span>
+<span id="cb39-39"><a href="#cb39-39"></a></span>
+<span id="cb39-40"><a href="#cb39-40"></a></span>
+<span id="cb39-41"><a href="#cb39-41"></a><span class="co"># cluster 3 - update with your variables</span></span>
+<span id="cb39-42"><a href="#cb39-42"></a>use.these &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;pnhwhtxx&quot;</span>, <span class="st">&quot;pnhblkxx&quot;</span>, <span class="st">&quot;phispxx&quot;</span>)</span>
+<span id="cb39-43"><a href="#cb39-43"></a>dd.cluster3 &lt;-<span class="st"> </span>data.dictionary[ data.dictionary<span class="op">$</span>LABEL <span class="op">%in%</span><span class="st"> </span>use.these , ]</span></code></pre></div>
+<p><strong>Reflection (not graded, but please answer):</strong></p>
+<p>Reflect on how the data we use in these models defines how we are defining and describing the neighborhoods (groups) within these models?</p>
+<p>Are these clusters valid constructs? Do we believe that they are accurately describing a concrete reality about the world? Would knowing which group that a tract is part of help us predict something about the tract, such as outcomes that children would experience living there, or how the tract might change over time?</p>
+<p>How do we know which is the right set of groups to use?</p>
+<p><br> <br></p>
+<p><br></p>
+<hr />
+<p><br></p>
+</div>
+<div id="submission-instructions" class="section level2">
+<h2>Submission Instructions</h2>
+<p>After you have completed your lab submit via Canvas. Login to the ASU portal at <a href="http://canvas.asu.edu" class="uri">http://canvas.asu.edu</a> and navigate to the assignments tab in the course repository. Upload your RMD and your HTML files to the appropriate lab submission link. Or else use the link from the Schedule page.</p>
+<p>Remember to name your files according to the convention: <strong>Lab-##-LastName.xxx</strong></p>
+<p><br></p>
+<hr />
+<p><br></p>
+<p><br> <br></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

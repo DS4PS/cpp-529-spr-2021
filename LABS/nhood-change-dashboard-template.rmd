@@ -1,0 +1,448 @@
+---
+title: "Models of Neighborhood Change in YOUR CITY NAME"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: bootstrap
+    source: embed
+    smart: false
+runtime: shiny
+---
+
+    
+
+```{r global, echo=F}
+
+# PACKAGES 
+
+
+# dashboard layout, widgets, and uploading
+
+library( flexdashboard )
+library( shiny )
+library( rsconnect )
+
+# data wrangling 
+
+library( dplyr )
+
+
+# formatting output
+
+library( DT )
+library( pander )
+library( knitr )
+library( stargazer )
+
+
+# maps
+
+library( ggmap )
+library( leaflet )
+library( viridis )
+library( geojsonio )
+library( sp )
+library( sf )
+library( tmap )
+library( pals )
+library( rgdal )
+
+```
+
+
+```{r, include=FALSE}
+
+# DATA STEPS 
+
+# load dorling cartogram from github
+# map already contains census data and groups from clustering 
+
+github.url <- "https://github.com/DS4PS/cpp-529-fall-2020/raw/main/data/phx_dorling.geojson"
+phx <- geojson_read( x=github.url,  what="sp" )
+
+# reproject the map 
+phx2 <- spTransform( phx, CRS("+init=epsg:3395") )
+
+# convert the sp map format to 
+# an sf (simple features) format:
+# ggmap requires the sf format
+phx.sf <- st_as_sf( phx2 )
+
+# separate out the data frame from the map
+d <- as.data.frame( phx.sf )
+
+
+
+```
+
+
+Community Demographics  
+=====================================  
+
+Inputs {.sidebar}
+-------------------------------------
+
+```{r}
+these.variables <- c("pnhwht12", "pnhblk12", "phisp12", "pntv12", "pfb12", "polang12", 
+"phs12", "pcol12", "punemp12", "pflabf12", "pprof12", "pmanuf12", 
+"pvet12", "psemp12", "hinc12", "incpc12", "ppov12", "pown12", 
+"pvac12", "pmulti12", "mrent12", "mhmval12", "p30old12", "p10yrs12", 
+"p18und12", "p60up12", "p75up12", "pmar12", "pwds12", "pfhh12")
+
+
+# replace these with descriptive labels 
+# from the data dictionary 
+temp.names <- paste0( "Variable ", these.variables )
+
+radioButtons( inputId="demographics", 
+              label = h3("Census Variables"),
+              # choices = these.variables, 
+              choiceNames=temp.names,
+              choiceValues=these.variables,
+              selected="pnhwht12")
+
+
+
+# Adding interpretable variable names
+# from the data dictionary:
+# add a name attribute for each variable
+# 
+# value <- c(1,2,3)
+# dd.name <- c("one","two","three")
+# 
+# x <- dd.name
+# names(x) <- value
+#
+# dd names and values linked
+# names( x[2] )
+#
+# can now get the label using the value
+# using the name attributes 
+# x[ "two" ]
+#
+# to add labels to the maps
+# use the radio button value 
+# to get the data dictionary label: 
+#
+# x[ input$demographics ]
+```
+
+
+
+Row {.tabset}
+-------------------------------------
+
+
+### Choropleth Map
+
+
+```{r}
+
+renderPlot({
+
+# split the selected variable into deciles 
+  
+get_data <- 
+  reactive({
+             phx.sf <- 
+             phx.sf %>% 
+             mutate( q = ntile( get(input$demographics), 10 ) )  
+          })
+
+  
+ggplot( get_data() ) +
+    geom_sf( aes( fill = q ), color=NA ) +
+    coord_sf( datum=NA ) +
+    labs( title = paste0( "Choropleth of Select Demographics: ", toupper(input$demographics) ),
+          caption = "Source: Harmonized Census Files",
+          fill = "Population Deciles" ) +
+    scale_fill_gradientn( colours=rev(ocean.balance(10)), guide = "colourbar" ) + 
+    xlim( xmin = -12519146, xmax = -12421368 ) + 
+    ylim( ymin = 3899074, ymax = 3965924 )
+
+})
+
+```
+
+
+### Variable Distribution 
+
+```{r}
+renderPlot({
+
+# extract vector x from the data frame 
+# x <-  d[ "pnhwht12" ] %>% unlist()
+
+  
+get_variable_x <- reactive({ d[ input$demographics ] })
+
+x <- get_variable_x() %>% unlist()
+
+cut.points <- quantile( x, seq( 0, 1, 0.1 ) )
+
+hist( x, breaks=50, 
+      col="gray", border="white", yaxt="n",
+      main=paste0( "Histogram of variable ", toupper( input$demographics ) ),
+      xlab="red lines represent decile cut points" )
+
+abline( v=cut.points, col="darkred", lty=3, lwd=2 )
+
+
+})
+```
+
+
+
+
+Neighborhoods  
+===================================== 
+
+### Clusters  
+
+```{r}
+
+# define the bounding box corners 
+bb <- st_bbox( c( xmin = -12519146, xmax = -12421368, 
+                  ymax = 3965924, ymin = 3899074 ), 
+               crs = st_crs("+init=epsg:3395"))
+
+
+# ADD YOUR CUSTOM LABELS TO THE CLUSTERS 
+
+phx2$cluster[ phx2$cluster == "1" ] <- "Baby Boomers"
+phx2$cluster[ phx2$cluster == "2" ] <- "Hipsters"
+
+
+
+renderTmap({
+
+tmap_mode("view")
+tm_basemap( "CartoDB.Positron" )
+tm_shape( phx2, bbox=bb ) + 
+  tm_polygons( col="cluster", palette="Accent",
+               title="Community Types" ) 
+
+})
+```
+
+
+
+
+NH Change 2000-2010  
+===================================== 
+
+
+
+Inputs {.sidebar}
+-------------------------------------
+
+```{r}
+
+button.labels <- c("Median Home Value 2000","Median Home Value 2010","Value Change 2000-2010","Growth in Home Value")
+button.values <- c("mhv.2000","mhv.2010","mhv.change","mhv.growth")
+  
+radioButtons( inputId="home.value", 
+              label = h3("Home Values"),
+              # choices = these.variables, 
+              choiceNames=button.labels,
+              choiceValues=button.values,
+              selected="mhv.2000")
+
+```
+
+
+
+
+Row {.tabset}
+-------------------------------------
+
+
+
+### Median Home Values
+
+
+```{r}
+
+renderPlot({
+
+# split the selected variable into deciles 
+  
+get_data <- 
+  reactive({
+             phx.sf <- 
+             phx.sf %>% 
+             mutate( q = ntile( get(input$home.value), 10 ) )  
+          })
+
+  
+ggplot( get_data() ) +
+    geom_sf( aes( fill = q ), color=NA ) +
+    coord_sf( datum=NA ) +
+    labs( title = paste0( "Spatial Distribution of Home Values: ", toupper(input$demographics) ),
+          caption = "Source: Harmonized Census Files",
+          fill = "Home Value Deciles" ) +
+    scale_fill_gradientn( colours=rev(ocean.balance(10)), guide = "colourbar" ) + 
+    xlim( xmin = -12519146, xmax = -12421368 ) + 
+    ylim( ymin = 3899074, ymax = 3965924 )
+
+})
+
+```
+
+
+### Variable Distribution 
+
+```{r}
+renderPlot({
+
+# extract vector x from the data frame 
+# x <-  d[ "pnhwht12" ] %>% unlist()
+
+  
+get_variable_x <- reactive({ d[ input$home.value ] })
+
+x <- get_variable_x() %>% unlist() %>% as.numeric()
+
+cut.points <- quantile( x, seq( 0, 1, 0.1 ) )
+
+hist( x, breaks=50, 
+      col="gray", border="white", yaxt="n",
+      main=paste0( "Histogram of ", toupper( input$home.value ) ),
+      xlab="red lines represent decile cut points" )
+
+abline( v=cut.points, col="darkred", lty=3, lwd=2 )
+
+
+})
+```  
+
+
+
+
+
+
+
+Drivers of Change   
+===================================== 
+
+
+
+Inputs {.sidebar}
+-------------------------------------
+
+```{r}
+
+button.labels <- c("Median Home Value 2000","Median Home Value 2010","Value Change 2000-2010","Growth in Home Value")
+button.values <- c("mhv.2000","mhv.2010","mhv.change","mhv.growth")
+  
+radioButtons( inputId="dv", 
+              label = h3("Select Your Dependent Variable"),
+              choiceNames=button.labels,
+              choiceValues=button.values,
+              selected="mhv.change")
+
+
+covariates <- c("pnhwht12", "pnhblk12", "phisp12", "pntv12", "pfb12", "polang12", 
+"phs12", "pcol12", "punemp12", "pflabf12", "pprof12", "pmanuf12", 
+"pvet12", "psemp12", "hinc12", "incpc12", "ppov12", "pown12", 
+"pvac12", "pmulti12", "mrent12", "mhmval12", "p30old12", "p10yrs12", 
+"p18und12", "p60up12", "p75up12", "pmar12", "pwds12", "pfhh12")
+
+# covariate.labels <- c( ... )
+
+checkboxGroupInput( inputId="covariates", 
+              label = h3("Select Variables for Your Model"),
+              choices = covariates,
+              # choiceNames=covariate.labels,
+              # choiceValues=covariates,
+              selected=c("pnhwht12","pprof12","pvac12") )
+
+```
+
+
+
+
+Row {.tabset}
+-------------------------------------
+
+
+
+### Predicting Change 
+
+```{r, results="asis"}
+
+# RUNNING A REGRESSION WITH USER INPUTS
+#
+# create a formula object
+# by constructing the formula from user selections 
+# as a string then casting as a formula object 
+# x.s <- c("x1","x2","x3" )
+# formula.text <- paste( "y", " ~ ", paste0( x.s, collapse=" + ") )
+# formula.object <- as.formula( formula.text )
+#
+# lm( formula.object, data=d )
+#
+# make sure all variables are in d
+
+
+  
+# check boxes return vectors 
+get_covariates <-  reactive({ input$covariates })
+
+
+renderUI({
+  
+covariates <- get_covariates() 
+
+formula.text <- paste0( "mhmval12", " ~ ", paste( covariates, collapse=" + " ) )
+fo <- as.formula( formula.text )
+
+m <- lm( fo, data=d )
+
+
+# HTML( "<div style='width: 60%; margin: 0px auto;'>" )
+HTML( 
+  
+  c("<br><br><br>",
+  "<div type='regression' style='width: 60%; margin: 0px auto;'>",
+  stargazer( m, type="html", omit.stat=c("rsq","f") ),
+  "</div>",
+  "<br><br><br>"
+  )
+  
+  )
+
+
+})
+
+# HTML( reg.table )
+```
+
+
+
+### Correlation Plots 
+
+```{r}
+pairs( iris )
+```
+
+
+
+
+
+<style>
+
+.chart-shim { overflow: auto; }
+ 
+table{
+   border-spacing:1px;
+   margin-top:30px;
+   margin-bottom:30px;
+   margin-left: auto;
+   margin-right: auto;
+   align:center} 
+
+td{ padding: 6px 10px 6px 10px } 
+
+th{ text-align: left; } 
+
+</style>

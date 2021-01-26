@@ -1,0 +1,167 @@
+---
+title: 'Saving Your Dorling Cartogram'
+output:
+  html_document:
+    theme: readable
+    df_print: paged
+    highlight: tango
+    toc: yes
+    toc_float: no
+    css: 'lab-instructions.css'
+    includes:
+      after_body: 'footer.html'
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=F, warning=F, eval=T)
+```
+
+
+<br>
+
+
+---
+
+<br>
+
+
+
+You will be using your dorling cartogram file for you specific project city several times throughout the semester. 
+
+You can re-create the cartogram steps each time, or else you can simply create it once and save the new shapefile on your computer for easy access. 
+
+```{r, eval=F}
+# load your census API key:
+census_api_key("YOUR KEY GOES HERE")
+```
+
+
+```{r}
+
+library( dplyr )
+library( tidycensus )
+library( sp )
+
+
+phx.pop <-
+get_acs( geography = "tract", variables = "B01003_001",
+         state = "AZ", county = "Maricopa", geometry = FALSE ) %>% 
+         select( GEOID, estimate ) %>%
+         rename( POP=estimate )
+
+phx.mhhi <- 
+  get_acs( geography = "tract", variables = "B19013_001",
+           state = "AZ", county = "Maricopa", geometry = FALSE ) %>% 
+  select( GEOID, estimate ) %>% 
+  rename( MHHI=estimate )
+
+
+# get a census tract shapefile
+# and add census data: 
+
+library( tigris )
+library( pander )
+
+phx <- tracts( state="AZ", county="Maricopa", cb=TRUE, year=2015 )
+phx <- merge( phx, phx.pop, by.x="GEOID", by.y="GEOID" )
+phx <- merge( phx, phx.mhhi, by.x="GEOID", by.y="GEOID" )
+
+head( phx@data ) %>% pander()
+
+plot( phx )
+
+
+library( rgdal )
+
+# project map and remove empty tracts
+phx <- spTransform( phx, CRS("+init=epsg:3395"))
+phx <- phx[ phx$POP != 0 & (! is.na( phx$POP )) , ]
+
+
+# devtools::install_github( "sjewo/cartogram" )
+
+library( cartogram )  # spatial maps w/ tract size bias reduction
+library( maptools )   # spatial object manipulation 
+library( sf )         # 'simple features' flavor of shapefiles
+
+
+# convert census tract polygons to dorling cartogram
+# no idea why k=0.03 works, but it does - default is k=5
+phx$pop.w <- phx$POP / 10000   # standardizes it to max of 1.5
+phx_dorling <- cartogram_dorling( x=phx, weight="pop.w", k=0.03 )
+
+plot( phx_dorling )
+
+
+
+# install.packages( "tmap" )
+library( tmap )       # thematic maps
+
+tm_shape( phx_dorling ) + 
+  tm_polygons( size="POP", col="MHHI", n=7, style="quantile", palette="Spectral" ) 
+
+
+
+# WRITE TO FILE 
+
+library( geojsonio )
+
+phx_dorling <- spTransform( phx_dorling, CRS("+proj=longlat +datum=WGS84") )
+geojson_write( phx_dorling, file="phx_dorling.geojson", geometry="polygon" )
+```
+
+
+Now you can load it from a local file, or upload it to GitHub so anyone can use the new dorling file: 
+
+```{r}
+library( geojsonio )
+library( sp )
+library( tmap ) 
+
+# load from github
+github.url <- "https://raw.githubusercontent.com/DS4PS/cpp-529-master/master/data/phx_dorling.geojson"
+phx <- geojson_read( x=github.url,  what="sp" )
+
+plot( phx )
+
+# from local file path
+# phx <- geojson_read( "data/phx_dorling.geojson", what="sp" )
+
+
+
+phx <- spTransform( phx, CRS("+init=epsg:3395") )
+
+bb <- st_bbox( c( xmin = -12519146, xmax = -12421368, 
+                  ymax = 3965924, ymin = 3899074 ), 
+               crs = st_crs("+init=epsg:3395"))
+
+tm_shape( phx, bbox=bb ) + 
+  tm_polygons( col="MHHI", n=10, style="quantile", palette="Spectral" ) +
+  tm_layout( "Dorling Cartogram", title.position=c("right","top") )
+
+tmap_mode("view")
+tm_basemap( "Stamen.Watercolor" ) +
+  tm_shape( phx, bbox=bb ) + 
+  tm_polygons( col="MHHI", n=7, style="quantile", palette="-inferno" ) 
+```
+
+
+
+
+
+
+<br>
+<hr>
+<br>
+
+<style>
+blockquote {
+    padding: 11px 22px;
+    margin: 0 0 22px;
+    font-size: 18px;
+    border-left: 5px solid lightgray;
+}
+
+</style>
+

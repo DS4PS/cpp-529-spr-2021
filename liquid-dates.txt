@@ -1,0 +1,31 @@
+Auto-Populating Dates one week from first date: 
+
+
+{% assign date = '2015-04-20' %}
+{% assign seconds = 5 | times: 24 | times: 60 | times: 60 %}
+{{ date | date: "%s" | plus: seconds | date: "%Y-%m-%e" }}
+
+{% assign lab-start = '2019-10-13' %}
+{{ lab-start | date: "%a, %b %e" }} 
+
+{% assign lab-start = '2019-10-13' %}
+{{ lab-start | date: "%c" }}
+
+{{ "now" | date: "%c" }}
+
+{% assign week = 2 %} 
+{% assign time-in-seconds = week | times:7 | times:24 | times:60 | times:60 | minus:604800 %} 
+{% assign due-date = lab-start | date: "%s" | plus:time-in-seconds %}
+{{ due-date | date: "%A, %b %d" }} 
+
+{% capture week-two-due-date %}
+
+{% assign d = due-date | date: "%d" %}
+{{ due-date | date: "%A, %b" }} {% case d %}
+  {% when '1' or '21' or '31' %}{{ d }}st, 
+  {% when '2' or '22' %}{{ d }}nd, 
+  {% when '3' or '23' %}{{ d }}rd, 
+  {% else %}{{ d }}th, {% endcase %}{{ due-date | date: "%Y" }} 
+
+{% endcapture %}
+{{ week-two-due-date }}

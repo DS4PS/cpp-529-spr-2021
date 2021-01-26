@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 02 - Intro to Census Data</title>
+
+<script src="lab-02-instructions_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lab-02-instructions_files/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="lab-02-instructions_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lab-02-instructions_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lab-02-instructions_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lab-02-instructions_files/navigation-1.1/tabsets.js"></script>
+<script src="lab-02-instructions_files/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="lab-instructions.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 02 - Intro to Census Data</h1>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#required-packages">Required Packages</a></li>
+<li><a href="#instructions">Instructions</a><ul>
+<li><a href="#step-1-getting-the-data">Step 1: Getting the Data</a></li>
+<li><a href="#step-2-transforming-the-data">Step 2: Transforming the Data</a></li>
+<li><a href="#step-3-data-exploration">Step 3: Data Exploration</a></li>
+<li><a href="#step-4-map-the-data">Step 4: Map the Data</a></li>
+</ul></li>
+<li><a href="#questions">Questions</a><ul>
+<li><a href="#question-1-exploration.">Question 1: Exploration.</a></li>
+<li><a href="#question-2-temporal-analysis.">Question 2: Temporal analysis.</a></li>
+<li><a href="#question-3-high-resolution-analysis.">Question 3: High-Resolution Analysis.</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>In this lab you will practice working with the US census data searching for variables, loading them into R, performing basic calculations and data wrangling tasks, visualizing the data with figures and maps, and offer substantive feedback on the data analysis.</p>
+<p>The topic for our analysis will be to compare the house-price-to-income ratio across US counties and over time. The ratio tells the number of years it would take for the median income household to buy the median household price. Under healthy economic conditions, the rule of thumb is that a buyer can afford a house if its price is equivalent to a house-price-to-income ratio of 2.6. Read the <a href="https://www.citylab.com/equity/2018/05/where-the-house-price-to-income-ratio-is-most-out-of-whack/561404/">Citylab report</a> report by Richard Florida for more background on the ratio and its importance and US county rankings.</p>
+<p>For loading, manipulating, and plotting Census data in R, refer to Lecture 2 video and notes, and in particular, the part of lecture that introduces <code>tidycensus</code>. In that portion of lecture, the exact codes are already given for you. All you need to do typically is to change variable name or year value, and re-run the code.</p>
+</div>
+<div id="required-packages" class="section level1">
+<h1>Required Packages</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidycensus)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(viridis)</span></code></pre></div>
+<p>Remember to set <code>census_api_key("your_key_here")</code> to access data</p>
+<p>You can get a Census API Key at: <a href="https://api.census.gov/data/key_signup.html">https://api.census.gov/data/key_signup.html</a></p>
+</div>
+<div id="instructions" class="section level1">
+<h1>Instructions</h1>
+<div id="step-1-getting-the-data" class="section level3">
+<h3>Step 1: Getting the Data</h3>
+<ul>
+<li><p>Use <code>tidycensus::get_acs()</code> to download information on median household income and median household value for ACS 5-year estimate, 2013-2017 period. <em>The notation <code>tidycensus::get_acs()</code> means the <code>get_acs()</code> function is located inside the <code>tidycensus</code> package, i.e. you need that package loaded to use the function.</em></p></li>
+<li><p>Call the dataset <code>CenDF</code></p></li>
+</ul>
+<p>Notes:</p>
+<p>Use <code>load_variables</code> to view and search for variables. In filter, search for <code>Median value</code> and use first row to get median household price variable name.</p>
+<p>Remember that <code>year=2017</code> and <code>survey="acs5"</code> reports 5-year estimates for the <strong>last five years</strong> from the specified date (i.e. year=2017 uses data from 2013-2017).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">#Edit me</span></span></code></pre></div>
+</div>
+<div id="step-2-transforming-the-data" class="section level3">
+<h3>Step 2: Transforming the Data</h3>
+<ul>
+<li><p>Use <code>spread()</code> to transform the dataset from long to wide and save the dataset back into <code>CenDF</code></p></li>
+<li><p>Use <code>mutate()</code> to create the ratio of median household value divided by household median income, and call it <code>HHInc_HousePrice_Ratio</code></p></li>
+<li><p>Notes</p>
+<ul>
+<li>It will be helpful to relabel variable names from census name to a more easy to understand name, such as <code>HHIncome</code> and <code>HouseValue</code>. You can do this using <code>mutate()</code> and <code>case_when()</code>.</li>
+<li>It will also be helpful to remove <code>MOE</code> variable using <code>select()</code></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#Edit me</span></span></code></pre></div>
+</div>
+<div id="step-3-data-exploration" class="section level3">
+<h3>Step 3: Data Exploration</h3>
+<ul>
+<li><p>Use base R function <code>order()</code> and <code>rev(order)</code> to explore which counties have the lowest and highest house-price-to-income ratio.</p>
+<ul>
+<li>Example: <code>CenDF[ order(CenDF$HHInc_HousePrice_Ratio) , ]</code> sorts the data by HHInc_HousePrice_Ratio low to high</li>
+<li>Example: <code>CenDF[ rev(order(CenDF$HHInc_HousePrice_Ratio)) , ]</code> sorts the data by HHInc_HousePrice_Ratio high to low</li>
+</ul></li>
+<li><p>There is always more than one way to accomplish the same task in R. For example, to get the lowest and highest house-price-to-income ratios</p>
+<ul>
+<li>dplyr: <code>arrange( CenDF, HHInc_HousePrice_Ratio )</code> sorts the df low to high</li>
+<li>dplyr: <code>arrange( CenDF, desc(HHInc_HousePrice_Ratio) )</code> sorts the df high to low</li>
+</ul></li>
+<li><p>Bonus: Use <code>datatable()</code> function in the <code>DT</code> library to get interactive table that allows you to order columns</p>
+<ul>
+<li><code>datatable(CenDF)</code></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">#Edit me</span></span></code></pre></div>
+</div>
+<div id="step-4-map-the-data" class="section level3">
+<h3>Step 4: Map the Data</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">#Edit me</span></span></code></pre></div>
+</div>
+</div>
+<div id="questions" class="section level1">
+<h1>Questions</h1>
+<div id="question-1-exploration." class="section level3">
+<h3>Question 1: Exploration.</h3>
+<p>1a. In step 3 above, what is the county with the highest (and lowest) house-price-to-income ratio? What is the average house-price-to-income ratio across all US counties over the time period?</p>
+<pre><code>- Answer: </code></pre>
+<p>1b. Where is Maricopa County on the list? How many years of median income will it take to buy a home in Maricopa County?</p>
+<pre><code>- Answer: </code></pre>
+<p>1c. Where is Los Angeles on the list and how does its ranking compare to the list reported in the <a href="https://www.citylab.com/equity/2018/05/where-the-house-price-to-income-ratio-is-most-out-of-whack/561404/">Citylab report</a> report by Richard Florida?</p>
+<pre><code>- Answer: </code></pre>
+</div>
+<div id="question-2-temporal-analysis." class="section level3">
+<h3>Question 2: Temporal analysis.</h3>
+<p>1a. Go back to Step 1 above, and enter in 2012 as the year value, which refers to the 2008-2012 5-year ACS estimate. The time period corresponds to the aftermath of the 2007/08 Great Financial Crisis. Repeat Steps 2-4, and re-answer Question 1 above for the 2008-2012 time period.</p>
+<pre><code>- Answer: </code></pre>
+<p>2b. Compare and contrast the findings over the different time periods. Calculate the change in the housing value-to-income ratio from 2008-2012 to 2013-2017. What is the change? Did the average house-price-to-income ratio increase or decrease? Did the house-price-to-income ratio increase (or decrease) for Maricopa County and Los Angeles county?</p>
+<pre><code>- Answer: </code></pre>
+</div>
+<div id="question-3-high-resolution-analysis." class="section level3">
+<h3>Question 3: High-Resolution Analysis.</h3>
+<p>3a. Go back to Step 1 above and keep 2017 as the year value. This time change geography value from <code>county</code> to <code>tract.</code> Also add <code>state = "AZ"</code> and <code>county = "Maricopa County"</code> within the <code>get_acs</code> function. Repeat Steps 2-4. What are the summary statistics (min, max, median, mean, sd) for the house-price-to-income ratio in Maricopa county?</p>
+<pre><code>- Answer: </code></pre>
+<p>3b. Compare and contrast the findings for the different levels of geography. How does the minimum, maxim, and mean value for census tracts within Maricopa county compare to results found in Question 1 looking at county-level data?</p>
+<pre><code>- Answer: </code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

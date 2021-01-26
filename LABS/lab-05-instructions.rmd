@@ -1,0 +1,304 @@
+---
+title: 'Lab 05 - Predicting MHV Change'
+output:
+  html_document:
+    theme: readable
+    df_print: paged
+    highlight: tango
+    toc: yes
+    toc_float: no
+    css: 'lab-instructions.css'
+    includes:
+      after_body: 'footer.html'
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=F, warning=F, eval=T)
+library( dplyr )
+library( pander )
+```
+
+
+<br>
+
+
+---
+
+<br>
+
+This lab is designed to help you build a baseline model of neighborhood change. 
+
+
+
+
+# Data Steps
+
+Follow the steps from the tutorial to create a dataset that includes 2000 and 2010 census variables and make sure to: 
+
+* Drop all rural census tracts.
+* Create a variable that measures the growth of median home value from 2000 to 2010. 
+* Omit cases that have a median home value less than $1,000 in 2000. 
+* Omit cases with growth rates above 200%.  
+
+Print summary statistics about median home values in 2000 and 2010. 
+
+Visualize the distribution of changes across all urban tracts between 2000 and 2010 (these are replications of steps in the tutorial as well). 
+
+
+
+# Lab Instructions 
+
+**Predicting MHV Change 2000-2010**
+
+
+## Part 01 - Select Three IVs 
+
+Select three neighborhood characteristics from 2000 that you feel will be good predictors of change in MHV between 2000 and 2010. Note these are static snapshots of the tracts in 2000. 
+
+Explain why you selected the three variables and your theory about how they should related to home value changes (the predicted sign of relationships in the regression model). 
+
+White a very simple hypothesis for each variable: 
+
+* Var X: Higher levels of X in 2000 will predict a larger increase in home value between 2000 and 2010. 
+
+## Part 02 - Variable Skew 
+
+Check for variable skew on each of the variables by generating a histogram and summary statistics. 
+
+Correct skew if necessary and explain how you did so (which transformation used our outliers suppressed). 
+
+## Part 03 - Multicollinearity 
+
+Do you expect multicollinearity to be a problem?
+
+Explain the problem of multicollinearity in plain language, and it's effect on the regression model when present. 
+
+Create a correlation plot for your three variables. Are any of them highly-correlated?  
+
+
+## Part 04 - Is the Relationship Linear? 
+
+Do you think the relationship between X and Y is a linear relationship, or do you have evidence that the slope changes depending upon the level of X? 
+
+Create a scatterplot of each X and Y overplotted with a lowess regression line and report if you find evidence of non-linearity. 
+
+```{r}
+# custom scatterplot with a lowess line
+jplot <- function( x1, x2, lab1="", lab2="", draw.line=T, ... )
+{
+
+    plot( x1, x2,
+          pch=19, 
+          col=gray(0.6, alpha = 0.2), 
+          cex=0.5,  
+          bty = "n",
+          xlab=lab1, 
+          ylab=lab2, cex.lab=1.5,
+        ... )
+
+    if( draw.line==T ){ 
+        ok <- is.finite(x1) & is.finite(x2)
+        lines( lowess(x2[ok]~x1[ok]), col="red", lwd=3 ) }
+
+}
+
+jplot( cars$speed, cars$dist, lab1="speed", lab2="distance" )
+```
+
+
+If you think the relationship may be non-linear, create a quadratic term for X and include it in the model. 
+
+
+## Part 04 - Descriptives 
+
+Report a table of descriptive statistics for home values (2000 values, 2010 values, 2000-2010 change in values, 2000-2010 growth rates) and your three covariates. Include: 
+
+* min 
+* 25th percentile 
+* median 
+* mean 
+* 75th percentile 
+* max 
+
+What's the typical change in home value between 2000 and 2010? 
+What's the largest change in home value between 2000 and 2010? 
+
+What's the relationship between the **change** in home value 2000-2010 and the **growth** in home value 2000-2010? 
+
+* Create a scatter plot of the relationship. 
+* How strong is the correlation? 
+* Do you think these two variables measure the same thing? 
+
+## Part 05 - Models 
+
+Run two models - 
+
+* one with change in median home value (dollar amount) as the DV 
+* one with median home value growth (percent change from 2000 to 2010) as the DV 
+
+Include your three variables in both models, after any transformations.  
+
+What are the results? 
+
+* Did any of the variables predict changes to home value in a meaningful way (relationship is statistically significant)? 
+* Which variable had the largest impact? 
+* Did the results match your predictions? 
+
+In a short paragraph explain your findings to a general audience. 
+
+
+## Part 06 - Effect Sizes 
+
+Calculate the effect size associated with each variable.
+
+Report the relative importance of each factor in predicting the outcome. 
+
+You can calculate effect size as follows: 
+
+```{r, eval=F}
+m <- lm( y ~ x )
+x.75 <- quantile( x, p=0.75 )
+x.25 <- quantile( x, p=0.25 )
+beta.x <- m$coefficients[2]  # position of x in the model 
+
+effect.size.x <- ( x.75 - x.25 ) * beta.x 
+```
+
+
+Coefficient sizes are often misleading because a one-unit change of X1 might be very different from a one-unit change in X2. For example if X1 is a proportion and X2 is measured in millions of dollars, then a one-unit change in X1 is the entire range of X1, whereas a one-unit change in X2 would represent a trivial amount. 
+
+As a result, B1 (the coefficient associated with X1) would be relatively large and B2 (the coefficient associated with X2) would be relatively small. 
+
+In order to compare the effects of X1 and X2 on the outcome we need to translate the results into a standardized format. Instead of using the arbitary one-unit scale, we ask how much does the outcome change when we observe at a **large change** in each IV. 
+
+In this case we are using an increase in each X from it's 25th to 75th percentile to represent a **large change**.
+
+Since the range of 25th to 75th percentiles are consistent across all IVs we can now compare their effect sizes since they are all in comparable scales. 
+
+* *INTERPRETATION OF B:* A **one-unit** change in X results in a **B** change in Y. 
+* *INTERPRETATION OF EFFECT SIZE:* A **large** change in X results in an **effect size** change in Y. 
+
+Where **large** is consistently operationalized as X.75 - X.25 for each variable. 
+
+It is really important to note that when trying to establish the relative importance of variables the *B* coefficients in a regression are **NOT** comparable. Effect sizes associated with each X **are** comparable. 
+
+
+
+<br>
+<hr>
+<br>
+
+
+# BONUS MAPS 
+
+**Spatial Distribution of Home Values in Your City**
+
+This step will not be graded this week. 
+
+However, you will need to complete it for your final project, so make your life easier by doing it now and receiving feedback. 
+
+Load the dorling cartogram for your selected city. 
+
+Merge the current census dataset to your dorling shapefile. 
+
+```{r, eval=F}
+# geoid-01 is the hypothetical name of tract ID in the shapefile
+# geoid-02 is the hypothetical name of tract ID in the census dataset
+
+# dorling must be an sp shapefile 
+
+d <- merge( dorling, census, by.x="geoid-01", by.y="geoid-02", all.x=TRUE )
+```
+
+
+You may have to convert tract GEOIDs so they follow the same format (all numbers): 
+
+```{r, eval=F}
+x <- d$tractid 
+head( x )
+# [1] "fips-01-001-020100" "fips-01-001-020200" "fips-01-001-020300"
+# [4] "fips-01-001-020400" "fips-01-001-020500" "fips-01-001-020600"
+
+x <- gsub( "fips", "", x )
+x <- gsub( "-", "", x )
+head( x )
+# [1] "01001020100" "01001020200" "01001020300" "01001020400" "01001020500"
+# [6] "01001020600"
+
+x <- as.numeric( x )
+
+# remember to add the variable back to the dataset
+d$tractid2 <- x 
+```
+
+
+Create three choropleth maps:
+
+1. Home values in 2000 
+2. Home values in 2010 
+3. Change in home values 2000-2010
+
+First, display histograms of each variable to determine whether skew exists. 
+
+Select a reasonable binning strategy or create your own.  
+
+Use sequential scales for home values in 2000 and 2010, light for low, dark for high. Use a color ramp with 5 to 11 bins.  
+
+Use a divergent scale for change in home values, red (or an equivalent color) representing loss in value, blue (or an equivalent color) representing gain in value, and gray representing no change in value. Use a color ramp with 5 to 11 bins. 
+
+Do losses and gains cluster together on the map? Where do the largest gains occur? 
+
+
+
+
+-----
+
+
+<br>
+
+# Submission Instructions
+
+Record your work in an RMD file where you can document your code and responses to the questions. Knit your RMD file and include your rendered HTML file. 
+
+Note that this lab will become one chapter in your final report. You will save time by drafting the lab as if it is an external report chapter rather than a regular lab. 
+
+Login to Canvas at <http://canvas.asu.edu> and navigate to the assignments tab in the course repository. Upload your zipped folder to the appropriate lab submission link.
+
+Remember to:
+
+* name your files according to the convention: **Lab-##-LastName.Rmd**
+* show your solution, include your code.
+* do not print excessive output (like a full data set).
+* follow appropriate style guidelines (spaces between arguments, etc.).
+
+See [Google's R Style Guide](https://google.github.io/styleguide/Rguide.xml) for examples.
+
+
+---
+
+<br>
+
+**Notes on Knitting**
+
+If you are having problems with your RMD file, visit the [**RMD File Styles and Knitting Tips**](https://ds4ps.org/cpp-526-spr-2020/labs/r-markdown-files.html) manual.
+
+Note that when you knit a file, it starts from a blank slate. You might have packages loaded or datasets active on your local machine, so you can run code chunks fine. But when you knit you might get errors that functions cannot be located or datasets don't exist. Be sure that you have included chunks to load these in your RMD file.
+
+Your RMD file will not knit if you have errors in your code. If you get stuck on a question, just add `eval=F` to the code chunk and it will be ignored when you knit your file. That way I can give you credit for attempting the question and provide guidance on fixing the problem.
+
+
+<br>
+<hr>
+<br>
+
+<style>
+blockquote {
+    padding: 11px 22px;
+    margin: 0 0 22px;
+    font-size: 18px;
+    border-left: 5px solid lightgray;
+}
+
+</style>
+

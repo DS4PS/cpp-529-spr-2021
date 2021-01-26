@@ -1,0 +1,70 @@
+---
+title: "Lab 02 - Intro to Census Data"
+output:
+  html_document:
+    theme: readable
+    highlight: tango
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( echo = TRUE, message=F, warning=F, fig.width=10 )
+```
+
+
+
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(viridis)
+```
+
+Remember to set `census_api_key("your_key_here")` to access data
+
+You can get a Census API Key at: [https://api.census.gov/data/key_signup.html](https://api.census.gov/data/key_signup.html)
+
+
+
+
+
+# Questions
+
+### Question 1: Exploration.
+
+1a. In step 3 above, what is the county with the highest (and lowest) house-price-to-income ratio?  What is the average house-price-to-income ratio across all US counties over the time period?  
+
+    - Answer: 
+    
+    
+1b. Where is Maricopa County on the list? How many years of median income will it take to buy a home in Maricopa County? 
+
+    - Answer: 
+    
+1c. Where is Los Angeles on the list and how does its ranking compare to the list reported in the [Citylab report](https://www.citylab.com/equity/2018/05/where-the-house-price-to-income-ratio-is-most-out-of-whack/561404/) report by Richard Florida? 
+
+    - Answer: 
+    
+    
+### Question 2: Temporal  analysis. 
+
+1a. Go back to Step 1 above, and enter in 2012 as the year value, which refers to the 2008-2012 5-year ACS estimate.  The time period corresponds to the aftermath of the 2007/08 Great Financial Crisis. Repeat Steps 2-4, and re-answer Question 1 above for the 2008-2012 time period.  
+
+    - Answer: 
+    
+    
+2b. Compare and contrast the findings over the different time periods. Calculate the change in the housing value-to-income ratio from 2008-2012 to 2013-2017. What is the change? Did the average house-price-to-income ratio increase or decrease? Did the house-price-to-income ratio increase (or decrease) for Maricopa County and Los Angeles county?
+
+    - Answer: 
+    
+### Question 3: High-Resolution Analysis. 
+
+3a. Go back to Step 1 above and keep 2017 as the year value.  This time change geography value from ```county``` to ```tract.```  Also add ```state = "AZ"``` and  ```county = "Maricopa County"``` within the ```get_acs``` function. Repeat Steps 2-4. What are the summary statistics (min, max, median, mean, sd) for the house-price-to-income ratio in Maricopa county? 
+
+    - Answer: 
+    
+  
+3b. Compare and contrast the findings for the different levels of geography.   How does the minimum, maxim, and mean value for census tracts within Maricopa county compare to results found in Question 1 looking at county-level data? 
+
+
+    - Answer: 
