@@ -10,8 +10,8 @@ description:        Community modeling course.
 
 # Site subpath, e.g. /blog
 url :               "https://ds4ps.github.io"
-baseurl:            "/cpp-529-fall-2020"
-course_url:         "http://ds4ps.org/cpp-529-fall-2020/"
+baseurl:            "/cpp-529-spr-2021"
+course_url:         "http://ds4ps.org/cpp-529-spr-2021/"
 
 # Permalink URLs structure, for permalink style options see: https://jekyllrb.com/docs/permalinks/
 permalink:          /:title/
@@ -57,8 +57,8 @@ author:
 github_info:
     username:          DS4PS # Github location of the course
     branch:            master
-    website-repo:      cpp-529-fall-2020
-    course-repo:       cpp-529-fall-2020
+    website-repo:      cpp-529-spr-2021
+    course-repo:       cpp-529-spr-2021
 
 # Author settings, displayed on post and doc pages if front matter references author name e.g. author: peter
 authors:
