@@ -109,11 +109,6 @@ The online discussions are explicitly intended to meet the objectives stated abo
 
 There are no required textbooks for class. All assigned readings and reference texts for labs will be available on the course website.
 
-The following texts are recommended as good reference material for topics covered in this course:
-
-* Glaeser, E. L. (2012). *Triumph of the City: How Our Greatest Invention Makes Us Richer, Smarter, Greener, Healthier, and Happier.* Penguin. 
-* Sampson, R. J. (2012). *Great American city: Chicago and the enduring neighborhood effect.* University of Chicago Press. 
-
 
 
 In addition to the required textbooks, the instructor will supplement the assigned unit readings with various journal articles, policy reports, or other related material.  These will be made available in the course shell.
