@@ -221,7 +221,8 @@ As students are all aware, ASU Online courses are typically offered on a seven a
 Please note: the course instructor may from time to time adjust assigned readings or adjust the due dates for assignment. The basic course content approach and learning objectives will not change, but slight modifications are possible if circumstances warrant an adjustment.
 
 
-## [Couse Schedule](/schedule/)
+## [Couse Schedule]
+
 
 * **Unit 1**: MEASUREMENT & THE THEORY OF NEIGHBORHOODS  
 * **Unit 2**: INTRO TO CENSUS DATA & GIS TOOLS IN R  
@@ -231,6 +232,7 @@ Please note: the course instructor may from time to time adjust assigned reading
 * **Unit 6**: PREDICTIVE MODELS OF NEIGHBORHOOD CHANGE  
 * **Unit 7**: WORK ON YOUR DATA DASHBOARD  
 
+To navigate to the course schedule page, please click the following URL [Link](https://ds4ps.org/cpp-529-spr-2021/schedule/)
 
 
 
