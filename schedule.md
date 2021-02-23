@@ -19,17 +19,18 @@ yellowdig:
   
 
 labs:
-  lab-01:  'Wednesday, Oct 21st' 
-  lab-02:  'Wednesday, Oct 28th'
-  lab-03:  'Wednesday, Nov 4th'
-  lab-04:  'Wednesday, Nov 11th'
-  lab-05:  'Wednesday, Nov 18th'
-  lab-06:  'date: LAB IS OPTIONAL'
+  lab-01:  'Sunday, March 14' 
+  lab-02:  'Sunday, March 21'
+  lab-03:  'Sunday, March 28'
+  lab-04:  'Sunday, April 4'
+  lab-05:  'Sunday, April  11'
+  lab-06:  'Sunday, April  18 (LAB IS OPTIONAL)'
   
   
 projects: 
-  dashboard:  'Friday, December 4th'
-  code-through:  'Friday, December 4th'
+  code-through:  'Friday, April 23'
+  dashboard:  'Wednesday, April 28'
+
 
 pdf-root-url: 'https://github.com/DS4PS/cpp-529-fall-2020/raw/main/lectures/'
 
