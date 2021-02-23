@@ -17,15 +17,13 @@ info:
  course_start_end_dates: Oct 12 to Dec 04, 2020  
  course_prerequisites:  
  class_meets_when:  Asynchronous  
- class_meets_where:  'https://asu.zoom.us/j/93504639301'
- review_sessions_when: 'Tues 5pm AZ'
- review_sessions_where: 'Virtual Office Hours Only'
- discussion_board_url: 'https://ds4ps.github.io/cpp-529-fall-2020/help/'
+ class_meets_where:  Asynchronous
+ discussion_board_url: 'https://ds4ps.github.io/cpp-529-fall-2021/help/'
 
 instructor:
--  name: Jesse Lecy, PhD
+-  name: Anthony Howell, PhD
    title: Professor
-   email: jdlecy@asu.edu
+   email: Anthony.Howell@asu.edu
    office_location: Virtual 
    website_url: www.lecy.info
    github_url:  
