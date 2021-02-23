@@ -14,7 +14,7 @@ info:
  course_number: CPP 529 
  course_level: Graduate 
  course_website: 'https://canvas.asu.edu/courses/70103'
- course_start_end_dates: Oct 12 to Dec 04, 2020  
+ course_start_end_dates: March 08 to April 24, 2021  
  course_prerequisites:  
  class_meets_when:  Asynchronous  
  class_meets_where:  Asynchronous
