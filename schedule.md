@@ -782,7 +782,7 @@ The purpose of Lab 4 is to replicate the work you did for the previous lab, but 
 
 **Lab Instructions**
 
-<a class="uk-button uk-button-default" href="https://ds4ps.org/cpp-529-master/labs/lab-04-instructions.html">LAB-04 Instructions</a>
+<a class="uk-button uk-button-default" href="../LABS/lab-04-instructions.html">LAB-04 Instructions</a>
 
 **Submit Solutions to Canvas**
 
