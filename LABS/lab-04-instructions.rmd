@@ -380,37 +380,152 @@ We can compare the model created with reliable measures of community stability t
 *	Median home value (drops alpha to 0.92)  
 
 
-You will create each index by adding the component variables together:
+You will create each index by adding the component variables together.
 
+Note that all of the variables are on very different scales, which is problematic for index construction. For example, adding household income (tens of thousands of dollars) to household size (one to a dozen people) would not make much sense because the variance of income completely eclipses the variance of household size. 
+
+So first we would want to standardize the variable scales. We could put all variables on a scale of 0 to 1 or 1 to 100, for example. Alternatively we could normalize all variables by converting them to the standard-normal scale (subtract the mean and divide by the standard deviation so everything is centered at zero and has a range of approximately -3 to +3).
+
+Recall that we have already converted variables to z-scores in previous steps with the **scale()** function. 
 
 
 ```{r}
-d3 <- as.data.frame(d3)
-dim1 <- d3$pown12 + d3$pmulti12 + d3$p10yrs12 + d3$pwds12 + d3$pfhh12   
-dim2 <- d3$pnhwht12 + d3$pnhblk12 + d3$phisp12 + d3$pfb12 + d3$polang12
-dim3 <- d3$pcol12 + d3$phs12 + d3$pprof12 + d3$hinc12 + d3$mhmval12
+# original data ranges
+summary( d2[ , 1:3 ] )
 
-
-plot( dim1, dim2, pch=19, col=gray(0.5,0.5), cex=1.5 )
-
-plot( dim1, dim3, pch=19, col=gray(0.5,0.5), cex=1.5 )
-
-plot( dim2, dim3, pch=19, col=gray(0.5,0.5), cex=1.5 )
+# normalized data ranges 
+# d3 <- apply( d2, 2, scale )
+summary( d3[ , 1:3 ] )
 ```
 
+Also not that in order to add variables together we need to make sure that they all have the same cardinality, i.e. positive scores should represent high scores on each scale, negative scores should represent low scores.
+
+We can determine this by looking at the correlation structure and checking to make sure we have all positive correlations:
+
+**Transitivity Index** 
+
+```{r}
+library( corrplot )
+
+d3 <- as.data.frame(d3)
+
+df.dim1 <- dplyr::select( d3, pown12, pmulti12, p10yrs12, pwds12, pfhh12 )
+
+corrplot( cor(df.dim1, use="complete.obs"), 
+          order = "hclust", tl.col='black', tl.cex=.75 ) 
+```
+
+
+We can see that home ownership goes in the opposite direction as all of the other variables. We can fix it by flipping the sign of home ownership, but note that this means that high on the "community stability" scale now means low home ownership, higher rates of transitivity, higher rates of multi-family homes. So we would have to rename the variable to "community instability". 
+
+Alternatively, we can flip the signs of the other variables so high is good on the scale (which is slightly easier to interpret). 
+
+```{r}
+# flip the signs 
+df.dim1$pmulti12  <-  - df.dim1$pmulti12
+df.dim1$p10yrs12  <-  - df.dim1$p10yrs12
+df.dim1$pwds12    <-  - df.dim1$pwds12
+df.dim1$pfhh12    <-  - df.dim1$pfhh12
+
+corrplot( cor(df.dim1, use="complete.obs"), 
+          order = "hclust", tl.col='black', tl.cex=.75 ) 
+```
+
+
+**Diversity Index**
+
+Need to flip percent white - low proportion of white population corresponds with higher levels of diversity. 
+
+
+```{r}
+
+df.dim2 <- d3[ c("pnhwht12", "pnhblk12", "phisp12", "pfb12", "polang12") ]
+
+# Check direction
+# Need to flip percent white 
+
+corrplot( cor(df.dim2, use="complete.obs"), 
+          order = "hclust", tl.col='black', tl.cex=.75 ) 
+
+```
+
+**Human Capital**
+
+```{r}
+df.dim3 <- select( d3, pcol12, phs12, pprof12, hinc12, mhmval12 )
+
+# Check direction
+# Need to flip high school graduation rates 
+
+corrplot( cor(df.dim3, use="complete.obs"), 
+          order = "hclust", tl.col='black', tl.cex=.75 ) 
+```
+
+
+Construct the new indices: 
+
+
+```{r}
+dim1 <- d3$pown12 - d3$pmulti12 - d3$p10yrs12 - d3$pwds12 - d3$pfhh12
+dim2 <- - d3$pnhwht12 + d3$pnhblk12 + d3$phisp12 + d3$pfb12 + d3$polang12
+dim3 <- d3$pcol12 - d3$phs12 + d3$pprof12 + d3$hinc12 + d3$mhmval12
+
+df.nhood.metrics <- data.frame( dim1, dim2, dim3 )
+summary( df.nhood.metrics )
+
+corrplot( cor( df.nhood.metrics, use="complete.obs" ), 
+          order = "hclust", tl.col='black', tl.cex=.75 ) 
+
+# plot( dim1, dim2, pch=19, col=gray(0.5,0.5), cex=1.5 )
+# plot( dim1, dim3, pch=19, col=gray(0.5,0.5), cex=1.5 )
+# plot( dim2, dim3, pch=19, col=gray(0.5,0.5), cex=1.5 )
+```
+
+
+
+```{r, eval=F, echo=F}
+df.pct <- sapply( d2, ntile, 100 )
+d4 <- as.data.frame( df.pct )
+d4$cluster <- as.factor( paste0("GROUP-",fit$classification) )
+
+num.groups <- length( unique( fit$classification ) )
+
+stats <- 
+d4 %>% 
+  group_by( cluster ) %>% 
+  summarise_each( funs(mean) )
+
+t <- data.frame( t(stats), stringsAsFactors=F )
+names(t) <- paste0( "GROUP.", 1:num.groups )
+t <- t[-1,]
+
+
+
+for( i in 1:num.groups )
+{
+  z <- t[,i]
+  plot( rep(1,30), 1:30, bty="n", xlim=c(-75,100), 
+        type="n", xaxt="n", yaxt="n",
+        xlab="Percentile", ylab="",
+        main=paste("GROUP",i) )
+  abline( v=seq(0,100,25), lty=3, lwd=1.5, col="gray90" )
+  segments( y0=1:30, x0=0, x1=100, col="gray70", lwd=2 )
+  text( -0.2, 1:30, data.dictionary$VARIABLE[-1], cex=0.85, pos=2 )
+  points( z, 1:30, pch=19, col="firebrick", cex=1.5 )
+  axis( side=1, at=c(0,50,100), col.axis="gray", col="gray" )
+}
+```
 
 I arbitrarily selected three census variables to compare methods. Here we are using % of population 18 and under, % of female labor force participation, and household income. 
 
 
 ```{r}
-
-# data set of three indices
-d22 <- data.frame( dim1, dim2, dim3 )
-fit2 <- Mclust( d22 )
+# cluster with data set of three indices
+fit2 <- Mclust( df.nhood.metrics )
 summary( fit2 )
 msp_dorling$cluster2 <- as.factor( fit2$classification )
 
-# dataset of three census variables 
+# cluster with dataset of three census variables 
 d33 <- data.frame( d3$p18und12, d3$pflabf12, d3$hinc12 )
 fit3 <- Mclust( d33 )
 summary( fit3 )
@@ -447,8 +562,14 @@ Recall that similar to how regression models are trying to select lines that min
 You can see here that the three indices we created do a better job of creating meaningful groups that the three census variables. When selecting variables for your model it is better to have independent measures - highly-correlated input variables will be explaining the same variance in your populations, and thus provide redundant information that is not useful for identifying groups. 
 
 ```{r}
-plot( fit3, what = "classification" )
+# all variables
+plot( fit, what = "classification" )
+
+# only 3 neighborhood indices
 plot( fit2, what = "classification" )
+
+# only 3 census variables 
+plot( fit3, what = "classification" )
 ```
 
 
