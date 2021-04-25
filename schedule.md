@@ -1129,7 +1129,7 @@ These background articles will be helpful:
 
 ## Dashboard Instructions 
 
-[Final Project Overview](https://asu.zoom.us/rec/share/mJwULrh8gjB0HFsBpv83sF3dk9VXq2AvD7jtiWMYUnUtvkAWHic_-Sw0gB9LinPe.3OcO4O43czcd9lse?startTime=1606784948000)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IjAvV8i-Cqg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <a class="uk-button uk-button-default" href="https://raw.githubusercontent.com/DS4PS/cpp-529-fall-2020/main/LABS/nhood-change-dashboard-template.rmd">DASHBOARD TEMPLATE</a>
 
